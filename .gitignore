@@ -47,3 +47,8 @@
 /robots.txt
 /update.php
 /web.config
+/.idea/
+/install.log
+/INSTALL.txt
+/README.md
+/ecso.php
