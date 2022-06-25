@@ -1,0 +1,26 @@
+.one-block, .d-flex{
+  display: flex;
+}
+.one-block .form-item, .d-flex > fieldset{
+  margin-left: 10px;
+}
+.delete-row{
+    margin-left: 20px;
+    height: 30px;
+    margin-top: 16px;
+    cursor: pointer;
+}
+.one-block:nth-child(4) .delete-row {
+    margin-top: 36px;
+}
+
+input:disabled {
+    cursor: not-allowed;
+}
+.form-group .form-item {
+    display: inline-block;
+}
+
+.color-red{
+  color: red;
+}

@@ -1,0 +1,12 @@
+id: test_cron_job
+langcode: en
+status: true
+dependencies: {  }
+crontab: '*/15 * * * *'
+plugin: test_cron_job
+type: default
+provider: simple_cron_test
+single: false
+configuration:
+  error_enabled: '0'
+weight: -1

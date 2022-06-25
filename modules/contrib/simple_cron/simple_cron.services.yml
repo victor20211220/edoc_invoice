@@ -1,0 +1,9 @@
+services:
+  simple_cron.cron_job_manager:
+    class: Drupal\simple_cron\CronJobManager
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.simple_cron'
+  plugin.manager.simple_cron:
+    class: Drupal\simple_cron\Plugin\SimpleCronPluginManager
+    parent: default_plugin_manager

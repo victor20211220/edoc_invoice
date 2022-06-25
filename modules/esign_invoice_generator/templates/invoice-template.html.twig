@@ -1,0 +1,557 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Invoice</title>
+  <style>
+    /* reset */
+
+    * {
+      border: 0;
+      box-sizing: content-box;
+      color: black;
+      font-family: inherit;
+      font-size: inherit;
+      font-style: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      text-decoration: none;
+      vertical-align: top;
+    }
+
+    /* heading */
+
+    h1 {
+      font: bold 100% sans-serif;
+      text-align: center;
+      color: red;
+      text-transform: uppercase;
+    }
+
+    /* table */
+
+    table {
+      font-size: 75%;
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 2px;
+    }
+
+    th,
+    td {
+      border-width: 1px;
+      padding: 0.5em;
+      position: relative;
+      text-align: left;
+    }
+
+    th,
+    td {
+      border-radius: 0.25em;
+      border-style: solid;
+    }
+
+    th {
+      background: #EEE;
+      border-color: #BBB;
+    }
+
+    td {
+      border-color: #DDD;
+    }
+
+    .outline-table {
+      border: solid 2px black;
+    }
+    .outline-table tr, .outline-table td {
+      border: none;
+    }
+
+    .outline-table td:last-child {
+      text-align: right;
+    }
+
+    .bottom-table td:first-child {
+      width: 20%;
+      text-align: left;
+    }
+    .bottom-table td:last-child {
+      border-bottom: solid 1px black;
+      text-align: left;
+    }
+    .bottom-table tr:first-child td {
+      border: none;
+    }
+    .text-bold {
+      font-weight: bold;
+    }
+
+    /* page */
+    html {
+      font: 16px/1 'Open Sans', sans-serif;
+      overflow: auto;
+    }
+
+    body {
+      box-sizing: border-box;
+      height: 11in;
+      overflow: hidden;
+      width: 8.5in;
+    }
+
+    body > div {
+      padding: 20px;
+    }
+
+    /* header */
+
+    header {
+      margin: 0 0 2em;
+    }
+
+    header:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
+
+    header h1 {
+      background: #000;
+      border-radius: 0.25em;
+      color: #FFF;
+      margin: 0 0 1em;
+      padding: 0.5em 0;
+    }
+
+    header .company-info {
+      text-align: center;
+      font-size: 75%;
+      font-style: normal;
+      line-height: 1.25;
+      margin: 0 1em 1em 0;
+    }
+
+    header .company-info p {
+      margin: 0 0 0.25em;
+    }
+
+    header img {
+      display: block;
+      float: right;
+    }
+
+    header span {
+      margin: 0 0 1em 1em;
+      max-height: 25%;
+      max-width: 60%;
+      position: relative;
+    }
+
+    header img {
+      max-height: 100%;
+      max-width: 100%;
+    }
+
+    header input {
+      cursor: pointer;
+      height: 100%;
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    /* article */
+
+    article,
+    article address,
+    table.meta,
+    table.inventory {
+      margin-bottom: 1em;
+    }
+
+    article:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
+
+    article h1 {
+      clip: rect(0 0 0 0);
+      position: absolute;
+    }
+
+    .float-left {
+      float: left;
+    }
+
+    .float-right {
+      /* float: right; */
+    }
+
+    address .title {
+      font-size: 125%;
+      font-weight: bold;
+      margin-bottom: 1em;
+    }
+
+    .border-block {
+      display: inline-block;
+      width: 3.93in;
+    }
+
+    .border-block p {
+      display: block;
+    }
+
+    span.text-left {
+      float: left;
+      width: 50%;
+    }
+
+    .mr-15 {
+      margin-right: 20px;
+    }
+
+    span.text-right {
+      float: right;
+      width: 50%;
+      text-align: right;
+    }
+
+    .details {
+      margin-bottom: 1em;
+    }
+
+    /* table meta & balance */
+
+    table.meta,
+    table.balance {
+      float: right;
+      width: 36%;
+    }
+
+    table.meta:after,
+    table.balance:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
+
+    /* table meta */
+
+    table.meta th {
+      width: 40%;
+    }
+
+    table.meta td {
+      width: 60%;
+    }
+
+    /* table items */
+
+    table.inventory {
+      clear: both;
+      width: 100%;
+    }
+
+    table.inventory th {
+      font-weight: bold;
+      text-align: center;
+    }
+
+    table.inventory td:nth-child(1) {
+      width: 26%;
+    }
+
+    table.inventory td:nth-child(2) {
+      width: 38%;
+    }
+
+    table.inventory td:nth-child(3) {
+      text-align: right;
+      width: 12%;
+    }
+
+    table.inventory td:nth-child(4) {
+      text-align: right;
+      width: 12%;
+    }
+
+    table.inventory td:nth-child(5) {
+      text-align: right;
+      width: 12%;
+    }
+
+    /* table balance */
+
+    table.balance th,
+    table.balance td {
+      width: 50%;
+    }
+
+    table.balance td {
+      text-align: right;
+    }
+
+    table {
+      border-top: solid 2px black;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table {
+      border-bottom: 0px;
+    }
+
+    tbody tr td:nth-child(4) {
+      text-align: center;
+    }
+
+
+
+    .result-tr td {
+      border: none;
+    }
+
+    tbody tr td:nth-child(5),
+    .result-tr td:nth-child(3),
+    .result-tr td:nth-child(5){
+      text-align: right;
+      border-width: 1px 2px;
+      border-style: solid;
+      border-color: black;
+    }
+
+    th,
+    td,
+    .result-tr td:nth-child(3) {
+      border-width: 1px 2px;
+      border-style: solid;
+      border-color: black;
+    }
+
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact;
+      }
+
+      html {
+        background: none;
+        padding: 0;
+      }
+
+      body {
+        box-shadow: none;
+        margin: 0;
+      }
+
+      span:empty {
+        display: none;
+      }
+    }
+
+    @page {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <header>
+    <img src="{{ site_logo }}">
+    <div class="company-info text-center">
+      <p class="name">{{site_name}}</p>
+      <p>Head Office:<span>{{site_address}}</span>,
+        Tel:<span>{{site_tel}}</span></p>
+      <p>Vat Reg No.<span>{{site_vat_reg}}</span></p>
+    </div>
+  </header>
+  <article>
+    <address class="float-left mr-15">
+      <p class="title">{{doc_type_title}} Details</p>
+      <div class="border-block">
+        <table class="outline-table">
+          <tbody>
+          <tr>
+            <td>Date:</td>
+            <td>{{invoice_date}}</td>
+          </tr>
+          <tr>
+            <td>{{ doc_type_title }} Number:</td>
+            <td>{{doc_number}}</td>
+          </tr>
+          <tr>
+            <td>UWS Sup a/c:</td>
+            <td>{{sup_ac}}</td>
+          </tr>
+          <tr>
+            <td>Our Ref:</td>
+            <td>{{uws_ref}}</td>
+          </tr>
+          <tr>
+            <td>Period Range:</td>
+            <td>{{uws_period_from}} - {{uws_period_to}}</td>
+          </tr>
+          <tr>
+            <td>Supplier Ref:</td>
+            <td>{{uws_sup_ref}}</td>
+          </tr>
+          <tr style="display:{{ show_doc_link }}">
+            <td>Relates to inv:</td>
+            <td>{{doc_link}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </address>
+    <address class="float-right">
+      <p class="title">To</p>
+      <div class="border-block">
+        <table class="outline-table">
+          <tbody>
+          <tr>
+            <td class="text-bold">{{company_name}}</td>
+          </tr>
+          <tr>
+            <td>{{address_1}}</td>
+          </tr>
+          <tr>
+            <td>{{address_2}}</td>
+          </tr>
+          <tr>
+            <td>{{county}}</td>
+          </tr>
+          <tr>
+            <td>{{city}}</td>
+          </tr>
+          <tr>
+            <td>{{postcode}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </address>
+  </article>
+  <div class="details">
+    <p class="title">Details:</p>
+    <table>
+      <thead class="text-center">
+      <tr>
+        <th width="30%">Dept</th>
+        <th width="15%">Type</th>
+        <th width="30%">Description</th>
+        <th width="10%">Vat %</th>
+        <th width="15%">Amount</th>
+      </tr>
+      </thead>
+      <tbody>
+        {{ details}}
+{#      <tr>#}
+{#        <td></td>#}
+{#        <td>Damages</td>#}
+{#        <td>something here</td>#}
+{#        <td>A</td>#}
+{#        <td>1.00</td>#}
+{#      </tr>#}
+      <tr class="result-tr">
+        <td colspan="3"></td>
+        <td>Net</td>
+        <td>{{total_net}}</td>
+      </tr>
+      <tr class="result-tr">
+        <td colspan="3"></td>
+        <td>Vat</td>
+        <td>{{total_vat}}</td>
+      </tr>
+      <tr class="result-tr text-bold">
+        <td colspan="3"></td>
+        <td>Total Due</td>
+        <td>{{total_due}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <article>
+    <address class="float-left mr-15">
+      <div class="border-block">
+        <table class="outline-table bottom-table">
+          <tbody>
+          <tr>
+            <td>UWS</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>Name :</td>
+            <td>{{user_name}}</td>
+          </tr>
+          <tr>
+            <td>eMail:</td>
+            <td>{{user_mail}}</td>
+          </tr>
+          <tr>
+            <td>Role:</td>
+            <td>Trading Team</td>
+          </tr>
+          <tr>
+            <td>Sign:</td>
+            <td>{{ sign }}</td>
+          </tr>
+          <tr>
+            <td>Date:</td>
+            <td>{{ sign_date }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </address>
+    <address class="float-right">
+      <div class="border-block">
+        <table class="outline-table bottom-table">
+          <tbody>
+          <tr>
+            <td>Supplier</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>Name :</td>
+            <td>{{supplier_name}}</td>
+          </tr>
+          <tr>
+            <td>eMail:</td>
+            <td>{{email}}</td>
+          </tr>
+          <tr>
+            <td>Role:</td>
+            <td>{{supplier_role}}</td>
+          </tr>
+          <tr>
+            <td>Sign:</td>
+            <td>{{ sign }}</td>
+          </tr>
+          <tr>
+            <td>Date:</td>
+            <td>{{ sign_date }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </address>
+  </article>
+  <aside>
+    <h1>Please send payment to {{site_address}}</h1>
+  </aside>
+</div>
+</body>
+
+</html>

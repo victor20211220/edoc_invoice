@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Contains esign_invoice_generator.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function esign_invoice_generator_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the esign_invoice_generator module.
+    case 'help.page.esign_invoice_generator':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('eSign Invoice Generator module') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+function esign_invoice_generator_theme($existing, $type, $theme, $path) {
+  $keys = ['site_logo', 'site_name', 'site_address', 'site_tel', 'site_vat_reg',
+    'invoice_date', 'doc_number', 'sup_ac', 'uws_ref', 'uws_period_from', 'uws_period_to', 'uws_sup_ref',
+    'company_name', 'address_1', 'address_2', 'county', 'city', 'postcode',
+    'details', 'total_net', 'total_vat', 'total_due', 'supplier_name', 'email', 'supplier_role',
+    'user_name', 'user_mail', 'user_role', 'doc_link', 'doc_type_title', 'show_doc_link', 'sign', 'sign_date'
+  ];
+  $variables = [];
+  foreach ($keys as $key){
+    $variables[$key] = NULL;
+  }
+  return [
+    'invoice_template' => [
+      'variables' => $variables
+    ],
+  ];
+}

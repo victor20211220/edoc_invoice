@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * The simple cron test module file.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function simple_cron_test_help($route_name, RouteMatchInterface $route_match) {
+  if ($route_name === 'help.page.simple_cron_test') {
+    return '<p>' . t('This module provides cron jobs for testing simple_cron module.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function simple_cron_test_cron() {
+  \Drupal::logger('simple_cron_test')->info('Simple cron test run cron hook run');
+}

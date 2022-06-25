@@ -1,0 +1,22 @@
+.buttons-csv{
+  display: none;
+}
+#action-buttons{
+  display: flex;
+}
+#action-buttons button{
+  margin-right: 20px;
+}
+div.dt-datetime table th {
+    background: white;
+}
+
+td.empty {
+    background: white;
+}
+div.dt-datetime div.dt-datetime-iconLeft button, div.dt-datetime div.dt-datetime-iconRight button, div.dt-datetime div.dt-datetime-iconUp button, div.dt-datetime div.dt-datetime-iconDown button {
+    color: white;
+}
+.color-red{
+  color: red;
+}

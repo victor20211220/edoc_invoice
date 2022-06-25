@@ -1,0 +1,12 @@
+name: Simple Cron Examples
+type: module
+description: 'Provide plugins examples for simple cron implementation'
+package: Examples
+core_version_requirement: ^8.9 || ^9
+dependencies:
+  - simple_cron:simple_cron
+
+# Information added by Drupal.org packaging script on 2021-06-03
+version: '1.0.0'
+project: 'simple_cron'
+datestamp: 1622731628

@@ -1,0 +1,16 @@
+.filter {
+  display: flex;
+  margin: 10px 0;
+}
+.filter * {
+  margin-right: 20px;
+}
+.filter label {
+  text-align: left;
+}
+.values, .filter label:first-child {
+  width: 200px;
+}
+.filter label:not(:first-child) {
+  width: 50px;
+}

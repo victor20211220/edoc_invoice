@@ -1,0 +1,6 @@
+name: eSign Invoice Generator
+type: module
+description: eSign Invoice Generator
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: Custom

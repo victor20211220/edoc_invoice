@@ -1,0 +1,270 @@
+<?php
+
+function esign_invoice_generator_schema() {
+  $schema = array();
+  $schema['suppliers'] = [
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'sup_ac' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'company_name' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'address_1' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'address_2' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'county' => [
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ],
+      'city' => [
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ],
+      'postcode' => [
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ],
+      'supplier_name' => [
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ],
+      'supplier_number' => [
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ],
+      'supplier_role' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+      ],
+      'email' => [
+        'type' => 'varchar',
+        'length' => 40,
+        'not null' => TRUE,
+      ],
+      'user_id' => [
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id', 'sup_ac'],
+  ];
+  $schema['invoice_dept'] = [
+    'fields' => [
+      'id' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+      ],
+      'dept' => [
+        'type' => 'varchar',
+        'length' => 25,
+        'not null' => TRUE,
+      ],
+      'nominal_code' => [
+        'type' => 'varchar',
+        'length' => 3,
+        'not null' => TRUE,
+      ]
+    ],
+    'primary key' => ['id'],
+  ];
+  $schema['invoice_type'] = [
+    'fields' => [
+      'id' => [
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE,
+      ],
+      'type' => [
+        'type' => 'varchar',
+        'length' => 25,
+        'not null' => TRUE,
+      ],
+      'nominal_code' => [
+        'type' => 'varchar',
+        'length' => 3,
+        'not null' => TRUE,
+      ]
+    ],
+    'primary key' => ['id'],
+  ];
+  $schema['invoice_vat'] = [
+    'fields' => [
+      'id' => [
+        'type' => 'char',
+        'length' => 1,
+        'not null' => TRUE,
+      ],
+      'vat' => [
+        'type' => 'float',
+        'not null' => TRUE,
+      ],
+      'nominal_code' => [
+        'type' => 'varchar',
+        'length' => 3,
+        'not null' => TRUE,
+      ]
+    ],
+    'primary key' => ['id'],
+  ];
+  $schema['invoice_sites'] = [
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'length' => 11,
+        'not null' => TRUE,
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'length' => 80,
+        'not null' => TRUE,
+      ],
+      'address' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'tel' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+      ],
+      'admin_email' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ],
+      'vat_reg' => [
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+      ],
+      'logo_path' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ]
+    ],
+    'primary key' => ['id'],
+  ];
+  $schema['invoices'] = [
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'invoice_number' => [
+        'type' => 'varchar',
+        'length' => 11,
+        'not null' => TRUE,
+      ],
+      'supplier_id' => [
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE,
+      ],
+      'date_created' => [
+        'type' => 'varchar',
+        'mysql_type' => 'datetime',
+        'not null' => TRUE,
+      ],
+      'uws_ref' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'uws_period' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'uws_sup_ref' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'invoice_file' => [
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE,
+      ],
+      'status' => [
+        'type' => 'int',
+        'length' => 2,
+        'not null' => TRUE,
+      ],
+      'is_exported' => [
+        'type' => 'int',
+        'length' => 2,
+        'not null' => TRUE,
+      ],
+      'document_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  $schema['invoice_details'] = [
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'invoice_id' => [
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE,
+      ],
+      'dept' => [
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE,
+      ],
+      'type' => [
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE,
+      ],
+      'vat' => [
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE,
+      ],
+      'description' => [
+        'type' => 'text',
+        'not null' => TRUE,
+      ],
+      'amount' => [
+        'type' => 'float',
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  return $schema;
+}

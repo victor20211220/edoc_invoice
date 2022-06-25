@@ -1,0 +1,12 @@
+name: Simple Cron Test
+type: module
+description: 'Provides test simple cron.'
+package: Testing
+core_version_requirement: ^8.9 || ^9
+dependencies:
+  - simple_cron:simple_cron
+
+# Information added by Drupal.org packaging script on 2021-06-03
+version: '1.0.0'
+project: 'simple_cron'
+datestamp: 1622731628

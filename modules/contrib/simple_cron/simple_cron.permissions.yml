@@ -1,0 +1,10 @@
+administer simple cron:
+  title: 'Administer simple cron'
+  description: 'Allow to access the administration page to configure simple cron.'
+  restrict access: true
+view simple cron jobs:
+  title: 'View cron jobs'
+  description: 'Allow to access the view cron jobs'
+run simple cron jobs:
+  title: 'Run cron jobs'
+  description: 'Allow to access to run cron jobs'

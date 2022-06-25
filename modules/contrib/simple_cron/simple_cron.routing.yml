@@ -1,0 +1,7 @@
+simple_cron.settings:
+  path: '/admin/config/system/cron/jobs/settings'
+  defaults:
+    _form: Drupal\simple_cron\Form\SimpleCronSettingsForm
+    _title: 'Simple cron settings'
+  requirements:
+    _permission: 'administer simple cron'

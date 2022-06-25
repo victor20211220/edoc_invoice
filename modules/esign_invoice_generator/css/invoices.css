@@ -1,0 +1,12 @@
+td[class^="color"]{
+  cursor: pointer;
+}
+td.color-red{
+  color: red !important;
+}
+td.color-green{
+  color: green !important;
+}
+td.color-amber{
+  color: #FFBF00 !important;
+}

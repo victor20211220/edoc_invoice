@@ -1,0 +1,12 @@
+simple_cron.cron:
+  route_name: system.cron_settings
+  base_route: system.cron_settings
+  title: 'Cron'
+entity.simple_cron_job.collection:
+  route_name: entity.simple_cron_job.collection
+  base_route: system.cron_settings
+  title: 'Simple cron jobs'
+simple_cron.settings:
+  route_name: simple_cron.settings
+  base_route: system.cron_settings
+  title: 'Simple cron settings'

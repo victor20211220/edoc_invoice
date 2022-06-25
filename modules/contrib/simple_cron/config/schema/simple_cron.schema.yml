@@ -1,0 +1,61 @@
+simple_cron.*:
+  type: config_entity
+  label: 'Cron job config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    crontab:
+      type: string
+      label: 'Crontab'
+    plugin:
+      type: string
+      label: 'The simple cron plugin'
+    type:
+      type: string
+      label: 'Type'
+    configuration:
+      type: sequence
+      sequence:
+        type: string
+    provider:
+      type: string
+      label: 'Provider'
+    single:
+      type: boolean
+      label: 'Single URL only'
+    status:
+      type: boolean
+      label: 'Status'
+    weight:
+      type: integer
+      label: 'Weight'
+
+simple_cron.settings:
+  type: config_object
+  label: Simple cron settings
+  mapping:
+    cron:
+      type: mapping
+      label: Cron hook override
+      mapping:
+        override_enabled:
+          type: boolean
+          label: Enabled
+    queue:
+      type: mapping
+      label: Queue workers override
+      mapping:
+        override_enabled:
+          type: boolean
+          label: Enabled
+    base:
+      type: mapping
+      label: Base configuration
+      mapping:
+        max_execution_time:
+          type: integer
+          label: Maximum execution time
+        lock_timeout:
+          type: integer
+          label: Lock timeout

@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Simple cron install file.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function simple_cron_requirements($phase) {
+  $requirements = [];
+
+  if ($phase === 'install') {
+    if (\Drupal::moduleHandler()->moduleExists('ultimate_cron')) {
+      $requirements['ultimate_cron'] = [
+        'title' => 'Simple Cron',
+        'description' => t('Simple cron cannot be installed because the Ultimate cron module is installed and incompatible.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+
+    if (!class_exists('Cron\CronExpression')) {
+      $requirements['cron_expression'] = [
+        'title' => 'Simple Cron',
+        'description' => t('Simple cron cannot be installed because the dragonmantank/cron-expression is not installed.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+  }
+
+  if ($phase === 'runtime') {
+    $requirements['cron_jobs']['title'] = 'Simple Cron';
+    $requirements['cron_jobs']['severity'] = REQUIREMENT_OK;
+
+    /** @var \Drupal\simple_cron\Entity\CronJobInterface[] $jobs */
+    $jobs = \Drupal::entityTypeManager()
+      ->getStorage('simple_cron_job')
+      ->loadByProperties(['status' => TRUE]);
+
+    $job_names = [];
+    foreach ($jobs as $job) {
+      // Check 10 minutes cron job run delay.
+      if ($job->getNextRunTime() && $job->getNextRunTime()->getTimestamp() < time() - 600) {
+        $job_names[] = $job->label();
+      }
+    }
+
+    if ($job_names) {
+      $requirements['cron_jobs']['severity'] = REQUIREMENT_WARNING;
+      $requirements['cron_jobs']['value'] = t('Jobs are behind their schedule');
+      $requirements['cron_jobs']['description'] = [
+        '#theme' => 'item_list',
+        '#items' => $job_names,
+      ];
+    }
+    else {
+      $requirements['cron_jobs']['value'] = t('Cron jobs is running properly');
+    }
+  }
+
+  return $requirements;
+}

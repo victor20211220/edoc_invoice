@@ -1,0 +1,8 @@
+services:
+  simple_cron.commands:
+    class: Drupal\simple_cron\Commands\SimpleCronCommands
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+    tags:
+      - { name: drush.command }

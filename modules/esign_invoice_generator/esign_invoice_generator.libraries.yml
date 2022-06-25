@@ -1,0 +1,72 @@
+invoice_form:
+  version: 1.93
+  css:
+    theme:
+      css/invoice-form.css: {}
+  js:
+    js/invoice-form.js: {}
+  dependencies:
+    - core/jquery
+datatable:
+  version: 1.93
+  css:
+    theme:
+      css/datatable/jquery.dataTables.min.css: { minified: true }
+      css/table-filters.css: {}
+  js:
+    js/datatable/jquery.dataTables.min.js: {minified: true }
+  dependencies:
+    - core/jquery
+suppliers:
+  version: 1.93
+  js:
+    js/suppliers.js: {}
+  dependencies:
+    - core/jquery
+invoices:
+  version: 1.93
+  css:
+    theme:
+      css/invoices.css: {}
+  js:
+    js/invoices.js: {}
+  dependencies:
+    - core/jquery
+export_invoices:
+  version: 1.93
+  css:
+    theme:
+      css/export-invoices.css: {}
+  js:
+    js/datatable/dataTables.buttons.min.js: {minified: true}
+    js/datatable/buttons.html5.min.js: {minified: true}
+    js/datatable/buttons.print.min.js: {minified: true}
+    js/datatable/moment.min.js: {minified: true}
+    js/datatable/dataTables.dateTime.min.js: {minified: true}
+    js/export-invoices.js: {}
+  dependencies:
+    - core/jquery
+user_invoice_create_form:
+  version: 1.93
+  js:
+    js/user-invoice-create-form.js: {}
+irs_create_form:
+  version: 1.93
+  js:
+    js/irs-create-form.js: {}
+list_irs:
+  version: 1.93
+  css:
+    theme:
+      css/list-irs.css: {}
+  js:
+    js/list-irs.js: {}
+import_invoices:
+  version: 1.93
+  css:
+    theme:
+      css/datatable/select.dataTables.min.css: { minified: true }
+      css/import-invoices.css: {}
+  js:
+    js/datatable/dataTables.select.min.js: {minified: true}
+    js/import-invoices.js: {}

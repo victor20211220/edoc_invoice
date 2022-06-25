@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Simple cron module file.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\simple_cron\Entity\CronJobInterface;
+
+/**
+ * Implements hook_help().
+ */
+function simple_cron_help($route_name, RouteMatchInterface $route_match) {
+  if ($route_name === 'help.page.simple_cron') {
+    $path = __DIR__ . '/README.md';
+
+    if (file_exists($path)) {
+      return '<pre>' . file_get_contents($path) . '</pre>';
+    }
+  }
+}
+
+/**
+ * Implements hook_modules_installed().
+ */
+function simple_cron_modules_installed() {
+  /** @var \Drupal\simple_cron\CronJobManagerInterface $cron_job_manager */
+  $cron_job_manager = \Drupal::service('simple_cron.cron_job_manager');
+  $cron_job_manager->updateList();
+}
+
+/**
+ * Implements hook_modules_uninstalled().
+ */
+function simple_cron_modules_uninstalled() {
+  /** @var \Drupal\simple_cron\CronJobManagerInterface $cron_job_manager */
+  $cron_job_manager = \Drupal::service('simple_cron.cron_job_manager');
+  $cron_job_manager->updateList();
+}
+
+/**
+ * Implements hook_rebuild().
+ */
+function simple_cron_rebuild() {
+  /** @var \Drupal\simple_cron\CronJobManagerInterface $cron_job_manager */
+  $cron_job_manager = \Drupal::service('simple_cron.cron_job_manager');
+  $cron_job_manager->updateList();
+}
+
+/**
+ * Implements hook_entity_operation_alter().
+ */
+function simple_cron_entity_operation_alter(array &$operations, EntityInterface $entity) {
+  // Unset translate operator for Cron Job entity when access denied.
+  if ($entity instanceof CronJobInterface && isset($operations['translate']['url']) && !$operations['translate']['url']->access()) {
+    unset($operations['translate']);
+  }
+}

@@ -1,0 +1,11 @@
+id: cron.simple_cron_test
+langcode: en
+status: true
+dependencies: {  }
+crontab: '*/15 * * * *'
+plugin: cron
+type: simple_cron_test
+provider: simple_cron_test
+single: false
+configuration: { }
+weight: 0

@@ -1,0 +1,11 @@
+id: test_cron_job_multi_types.type2
+langcode: en
+status: true
+dependencies: {  }
+crontab: '*/15 * * * *'
+plugin: test_cron_job_multi_types
+type: type2
+provider: simple_cron_test
+single: false
+configuration: { }
+weight: 1

@@ -1,0 +1,7 @@
+cron:
+  override_enabled: TRUE
+queue:
+  override_enabled: FALSE
+base:
+  max_execution_time: 240
+  lock_timeout: 900

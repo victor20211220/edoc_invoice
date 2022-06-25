@@ -1,0 +1,177 @@
+esign_invoice_generator.suppliers_controller_display:
+  path: '/suppliers'
+  defaults:
+    _controller: '\Drupal\esign_invoice_generator\Controller\SuppliersTableController::display'
+    _title: 'Supplier List'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: '\Drupal\esign_invoice_generator\Form\InvoiceForm::denySupplier'
+
+esign_invoice_generator.suppliers_form:
+  path: '/add-supplier'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\SupplierForm'
+    _title: 'Add Supplier'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: '\Drupal\esign_invoice_generator\Form\InvoiceForm::denySupplier'
+
+esign_invoice_generator.edit_supplier:
+  path: '/edit-supplier'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\SupplierForm'
+    _title: 'Manage Supplier Details'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: '\Drupal\esign_invoice_generator\Form\InvoiceForm::denySupplier'
+
+esign_invoice_generator.delete_form:
+  path: '/delete-supplier/{cid}'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\DeleteForm'
+    _title: 'Delete Supplier'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: '\Drupal\esign_invoice_generator\Form\InvoiceForm::denySupplier'
+
+esign_invoice_generator.invoice_form:
+  path: '/suppliers/form/invoice_form'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\InvoiceForm'
+    _title: 'Generate Invoice/Credit Document'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _custom_access: '\Drupal\esign_invoice_generator\Form\InvoiceForm::denySupplier'
+
+esign_invoice_generator.send_invoice:
+  path: '/send-invoice'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\InvoiceForm'
+    _title: 'Send invoice'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'authenticated'
+
+esign_invoice_generator.get_sign_status:
+  path: '/get-invoice-sign-status'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\InvoiceForm'
+    _title: 'Get sign status'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'authenticated'
+
+esign_invoice_generator.cancel_invite:
+  path: '/cancel-sign-invite'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\InvoiceForm'
+    _title: 'Cancel invoice'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'authenticated'
+
+esign_invoice_generator.invoices_controller_display:
+  path: '/invoices'
+  defaults:
+    _controller: '\Drupal\esign_invoice_generator\Controller\InvoicesTableController::display'
+    _title: 'Invoices'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'authenticated'
+
+
+esign_invoice_generator.export_controller_display:
+  path: '/export'
+  defaults:
+    _controller: '\Drupal\esign_invoice_generator\Controller\ExportInvoicesTableController::display'
+    _title: 'Export Data'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'export_data + administrator'
+
+
+esign_invoice_generator.irs_form:
+  path: '/add-irs'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\IrsForm'
+    _title: 'Add recurring invoice setup'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'trading + administrator'
+
+
+esign_invoice_generator.list_irs:
+  path: '/list-irs'
+  defaults:
+    _controller: '\Drupal\esign_invoice_generator\Controller\IrsTableController::display'
+    _title: 'Invoice recurring setups'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'trading + administrator'
+
+
+esign_invoice_generator.import_controller_display:
+  path: '/import'
+  defaults:
+    _controller: '\Drupal\esign_invoice_generator\Controller\ImportInvoicesTableController::display'
+    _title: 'Import Data'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'import + administrator'
+
+
+esign_invoice_generator.upload_csv:
+  path: '/upload-csv'
+  defaults:
+    _controller: '\Drupal\esign_invoice_generator\Controller\ImportInvoicesTableController::uploadCsv'
+    _title: 'Import Csv'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'import + administrator'
+
+
+esign_invoice_generator.get_sign_details:
+  path: '/get-invoice-sign-details'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\InvoiceForm'
+    _title: 'Get sign details'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'authenticated'
+
+
+esign_invoice_generator.check_oiv:
+  path: '/check-oiv'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\InvoiceForm'
+    _title: ''
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'authenticated'
+
+
+esign_invoice_generator.get_cn_reason:
+  path: '/get-cn-reason'
+  defaults:
+    _form: '\Drupal\esign_invoice_generator\Form\InvoiceForm'
+    _title: ''
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _role: 'authenticated'
