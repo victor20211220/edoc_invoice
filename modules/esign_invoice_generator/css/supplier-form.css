@@ -1,0 +1,8 @@
+.form-item{
+  width: 40%;
+  margin-right: 5%;
+  display: inline-block;
+}
+.form-item-email {
+    display: block;
+}

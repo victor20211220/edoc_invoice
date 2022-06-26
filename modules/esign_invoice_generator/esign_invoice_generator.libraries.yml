@@ -70,3 +70,8 @@ import_invoices:
   js:
     js/datatable/dataTables.select.min.js: {minified: true}
     js/import-invoices.js: {}
+supplier_form:
+  version: 1.93
+  css:
+    theme:
+      css/supplier-form.css: {}

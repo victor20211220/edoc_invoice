@@ -90,6 +90,9 @@ class IrsForm extends FormBase
         '#type' => $this->getTypeFromFormKey($key),
         '#default_value' => (isset($isClone) || isset($isManage)) ? $row[$key] : ($this->isKeyRp($key) ? "DAY" : ""),
       ];
+
+      if (in_array($key, ["uws_ref", "uws_sup_ref"])) // max 40 chars in length
+        $form[$key]['#attributes'] = ['maxlength' => 40];
       if (isset($isManage)) {
         if (!in_array($key, ['start_date', 'end_date'])) {
           $form[$key]['#attributes'] = ['disabled' => 'disabled'];

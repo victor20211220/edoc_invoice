@@ -34,7 +34,8 @@ use PHPMailer\PHPMailer\Exception;
  *
  * @package Drupal\esign_invoice_generator\invoice_form
  */
-class InvoiceForm extends FormBase {
+class InvoiceForm extends FormBase
+{
 
   public $apiUrl;
 
@@ -50,30 +51,36 @@ class InvoiceForm extends FormBase {
 
   public $siteInfo = [];
 
-  public function __construct() {
+  public function __construct()
+  {
     $query = \Drupal::database()->select('invoice_sites', 'm')
       ->condition('id', 1)
       ->fields('m');
     $this->siteInfo = $query->execute()->fetchAssoc();
   }
 
-  public function setApiUrl($apiUrl) {
+  public function setApiUrl($apiUrl)
+  {
     $this->apiUrl = $apiUrl;
   }
 
-  public function setToken($token) {
+  public function setToken($token)
+  {
     $this->token = $token;
   }
 
-  public function setDocumentId($documentId) {
+  public function setDocumentId($documentId)
+  {
     $this->documentId = $documentId;
   }
 
-  public function setEntityManager($entityManager) {
+  public function setEntityManager($entityManager)
+  {
     $this->entityManager = $entityManager;
   }
 
-  public static function getDetailFields() {
+  public static function getDetailFields()
+  {
     return [
       'dept' => t('Dept'),
       'type' => t('Type'),
@@ -85,7 +92,8 @@ class InvoiceForm extends FormBase {
     ];
   }
 
-  public static function getMainFields() {
+  public static function getMainFields()
+  {
     return [
       'uws_ref' => t('Our Ref:'),
       'uws_sup_ref' => t('Supplier Ref:'),
@@ -95,7 +103,8 @@ class InvoiceForm extends FormBase {
     ];
   }
 
-  public static function getOptions() {
+  public static function getOptions()
+  {
     $optionTables = ['invoice_dept', 'invoice_type', 'invoice_vat'];
     $result = [];
     $db = Database::getConnection();
@@ -119,7 +128,8 @@ class InvoiceForm extends FormBase {
     return $result;
   }
 
-  public static function getVats() {
+  public static function getVats()
+  {
     $db = Database::getConnection();
     $options = $db->select('invoice_vat', "iv")
       ->fields("iv")
@@ -131,7 +141,8 @@ class InvoiceForm extends FormBase {
     return $result;
   }
 
-  public function getFormId() {
+  public function getFormId()
+  {
     return 'esign_invoice_generator_invoiceform';
   }
 
@@ -139,7 +150,8 @@ class InvoiceForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state)
+  {
     $db = \Drupal::database();
     if (isset($_GET['document_id'])) {
       $documentId = $_GET['document_id'];
@@ -178,7 +190,7 @@ class InvoiceForm extends FormBase {
           ->execute()->fetchAll();
         $newDtRows = [];
         foreach ($invDtRows as $key => $invDtRow) {
-          $newDtRow = (array) $invDtRow;
+          $newDtRow = (array)$invDtRow;
           unset($newDtRow['id']);
           foreach (array_keys($newDtRow) as $detailKey) {
             $newDtRows[$detailKey][] = $newDtRow[$detailKey];
@@ -206,40 +218,33 @@ class InvoiceForm extends FormBase {
 
 
         \Drupal::messenger()->addMessage("eSign cancelled");
-      }
-      else {
+      } else {
         \Drupal::messenger()->addMessage("eSign cancellation failed");
       }
       $options['absolute'] = TRUE;
       return new RedirectResponse(Url::fromRoute("esign_invoice_generator.invoices_controller_display", [], $options)
         ->toString(), 302);
-    }
-    else {
+    } else {
       if (isset($_GET['download_document_id'])) {
         return new TrustedRedirectResponse($this->getDocumentStatusLink($_GET['download_document_id']));
-      }
-      else {
+      } else {
         if (isset($_GET['sign_document_id'])) {
           $this->setSignStatus($_GET['sign_document_id']);
           echo "Updated";
           exit();
-        }
-        else {
+        } else {
           if (isset($_GET['gisd'])) {
             echo json_encode($this->getSignDetails($_GET['gisd']));
             exit();
-          }
-          else {
+          } else {
             if (isset($_GET['oiv'])) {
               echo json_encode($this->checkOIV($_GET['oiv']));
               exit();
-            }
-            else {
+            } else {
               if (isset($_GET['reason_id'])) {
                 echo $this->checkOIV($_GET['reason_id'])['reason'];
                 exit();
-              }
-              else {
+              } else {
                 $form['#attached']['library'] = [
                   'esign_invoice_generator/invoice_form',
                   'esign_invoice_generator/user_invoice_create_form',
@@ -281,6 +286,8 @@ class InvoiceForm extends FormBase {
                       ($this->isDocTypeField($key) ? "select" : "textfield") : "date",
                     '#default_value' => $isEdit ? $row[$key] : ($this->isDocTypeField($key) ? "i" : ""),
                   ];
+                  if (in_array($key, ["uws_ref", "uws_sup_ref"])) // max 40 chars in length
+                    $form[$key]['#attributes'] = ['maxlength' => 40];
                   if ($this->isDocTypeField($key)) {
                     $form[$key]['#options'] = [
                       'i' => $this->t('Invoice'),
@@ -309,8 +316,7 @@ class InvoiceForm extends FormBase {
                       if (!in_array($key, ['description', 'amount'])) {
                         $form[$multi_key]['#type'] = 'select';
                         $form[$multi_key]['#options'] = $options[$key];
-                      }
-                      else {
+                      } else {
                         $form[$multi_key]['#type'] = $key == 'amount' ? 'number' : 'textfield';
                       }
                     }
@@ -322,10 +328,8 @@ class InvoiceForm extends FormBase {
                     $form['dept-' . $i . '-[]']['#prefix'] = '<div class="one-block">';
                     $form['delete' . $i]['#suffix'] = '</div>';
                   }
-                }
-                else {
-                  foreach ($detailFields as $key => $label)
-                  {
+                } else {
+                  foreach ($detailFields as $key => $label) {
                     $multi_key = $key . '[]';
                     $form[$multi_key] = [
                       '#title' => $label,
@@ -347,12 +351,10 @@ class InvoiceForm extends FormBase {
                       case 'amount':
                         $form[$multi_key]['#type'] = 'number';
                         $form[$multi_key]['#default_value'] = 0;
-                        if($key === "amount")
-                        {
+                        if ($key === "amount") {
+                          $form[$multi_key]['#default_value'] = 0.00;
                           $form[$multi_key]['#attributes'] = ['readonly' => ''];
-                        }
-                        else
-                        {
+                        } else {
                           $form[$multi_key]['#step'] = 0.01;
                         }
                         break;
@@ -400,7 +402,8 @@ class InvoiceForm extends FormBase {
    * {@inheritdoc}
    */
   public
-  function validateForm(array &$form, FormStateInterface $form_state) {
+  function validateForm(array &$form, FormStateInterface $form_state)
+  {
     parent::validateForm($form, $form_state);
   }
 
@@ -408,7 +411,8 @@ class InvoiceForm extends FormBase {
    * {@inheritdoc}
    */
   public
-  function submitForm(array &$form, FormStateInterface $form_state) {
+  function submitForm(array &$form, FormStateInterface $form_state)
+  {
     $db = Database::getConnection();
     $form_data = $_POST;
     $fields = ['doc_link' => '', 'source' => 'u'];
@@ -425,8 +429,7 @@ class InvoiceForm extends FormBase {
       $invoice = $query->execute()->fetchAssoc();
       $fields['supplier_id'] = $invoice['supplier_id'];
       $fields['doc_link'] = $invoice['doc_link'];
-    }
-    else {
+    } else {
       $last_id = $this->getTblLastId();
     }
     $docNumber = $this->invoice_num($last_id, 7, "");
@@ -488,8 +491,7 @@ class InvoiceForm extends FormBase {
         ->fields($fields)
         ->condition('id', $invoiceEid)
         ->execute();
-    }
-    else {
+    } else {
       $query->insert(self::$invoiceHeaderTblName)
         ->fields($fields)
         ->execute();
@@ -498,7 +500,8 @@ class InvoiceForm extends FormBase {
   }
 
 
-  public static function invoice_num($input, $pad_len = 7, $prefix = NULL) {
+  public static function invoice_num($input, $pad_len = 7, $prefix = NULL)
+  {
     if (is_string($prefix)) {
       return sprintf("%s%s", $prefix, str_pad($input, $pad_len, "0", STR_PAD_LEFT));
     }
@@ -506,7 +509,8 @@ class InvoiceForm extends FormBase {
   }
 
   public
-  function getInvoiceHtml($fields, $invoiceDetails) {
+  function getInvoiceHtml($fields, $invoiceDetails)
+  {
     $logo_path = file_url_transform_relative(file_create_url(theme_get_setting('logo.url')));
     $options = $this->getOptions();
     $site_info = $this->siteInfo;
@@ -534,12 +538,11 @@ class InvoiceForm extends FormBase {
         if (!in_array($detail_key, ["qty", "description", "price_per", "amount"])) {
           if ($detail_key == 'vat') {
             $vatVal = $vats[$val];
-            $net = (float) $invoiceDetails['amount'][$i] * 1;
+            $net = (float)$invoiceDetails['amount'][$i] * 1;
             $total_vat += $net * $vatVal / 100;
             $total_net += $net;
             $val = $val . "-" . $vatVal . "%";
-          }
-          else {
+          } else {
             $val = $options[$detail_key][$val];
             if ($detail_key == "dept") {
               $val = explode(" - ", $val)[1];
@@ -547,7 +550,7 @@ class InvoiceForm extends FormBase {
           }
         }
         if (in_array($detail_key, ['price_per', 'amount'])) {
-          $val = number_format((float) $val, 2, '.', ' ');
+          $val = number_format((float)$val, 2, '.', ' ');
         }
         $row .= '<td>' . $val . '</td>';
       }
@@ -605,27 +608,20 @@ class InvoiceForm extends FormBase {
       global $replace;
       if ($site_info_check) {
         $replace = $site_info[substr($key, 5)];
-      }
-      elseif ($this->isUwsPeriodField($key) !== FALSE) {
+      } elseif ($this->isUwsPeriodField($key) !== FALSE) {
         $val = $fields[$key];
         $replace = $val === "" ? "" : date('d/m/Y', strtotime($val));
-      }
-      elseif ($key === "doc_type_title") {
+      } elseif ($key === "doc_type_title") {
         $replace = $fields['doc_type'] === "i" ? "Invoice" : "Credit Note";
-      }
-      elseif ($key === "show_doc_link") {
+      } elseif ($key === "show_doc_link") {
         $replace = $fields['doc_type'] === "i" ? "none" : "table-row";
-      }
-      elseif ($key === "doc_link") {
+      } elseif ($key === "doc_link") {
         $replace = $fields['doc_type'] === "i" ? "" : $fields[$key];
-      }
-      elseif (isset($fields[$key])) {
+      } elseif (isset($fields[$key])) {
         $replace = $fields[$key];
-      }
-      elseif (isset($supplier_details[$key])) {
+      } elseif (isset($supplier_details[$key])) {
         $replace = $supplier_details[$key];
-      }
-      else {
+      } else {
         $replace = ${$key};
       }
       $data['#' . $key] = $replace;
@@ -633,14 +629,15 @@ class InvoiceForm extends FormBase {
     return [
       \Drupal::service('renderer')->renderPlain($data),
       $data['#user_mail'],
-      $data['#email'],
       $details_count,
+      $supplier_details,
     ];
 
   }
 
   public
-  function getBase64Image($path) {
+  function getBase64Image($path)
+  {
     $type = pathinfo($path, PATHINFO_EXTENSION);
     $data = file_get_contents($path);
     $type = $type == 'svg' ? 'svg+xml' : $type;
@@ -648,7 +645,8 @@ class InvoiceForm extends FormBase {
   }
 
   public
-  function makeToken() {
+  function makeToken()
+  {
     // configuring entity manager with the basic token
     $siteInfo = $this->siteInfo;
     $apiUrl = $siteInfo['signow_live'] ? 'https://api.signnow.com' : 'https://api-eval.signnow.com';
@@ -656,12 +654,14 @@ class InvoiceForm extends FormBase {
     $auth = new SignNowOAuth($apiUrl);
     $this->setEntityManager($auth->bearerByPassword($siteInfo['signnow_basic_token'], $siteInfo['signow_username'], $siteInfo['signow_password']));
     $response = $this->entityManager->get(Token::class);
-    $responseAry = (array) $response;
+    $responseAry = (array)$response;
     $token = $responseAry[array_keys($responseAry)[0]];
     $this->setToken($token);
   }
+
   public
-  function sendToSignNow($filePath, $uwsEmail, $supplierEmail, $detailCount, $docType) {
+  function sendToSignNow($filePath, $uwsEmail, $detailCount, $supplierDetails, $docType)
+  {
     if (self::isLocal()) { //disable send pdf document to sign now on local
       $this->setDocumentId('local-doc-id');
       return 'success';
@@ -675,7 +675,7 @@ class InvoiceForm extends FormBase {
     $w = 139;
     $receivers = [
       [$uwsEmail, 'Signer 1', $h, $w, $y, 76.56],
-      [$supplierEmail, 'Signer2', $h, $w, $y, 383],
+      [$supplierDetails['email'], 'Signer2', $h, $w, $y, 383],
     ];
 
     //generate token
@@ -683,7 +683,7 @@ class InvoiceForm extends FormBase {
     $entityManager = $this->entityManager;
     $uploadFile = (new DocumentUpload(new \SplFileInfo($filePath)));
     $document = $entityManager->create($uploadFile);
-    $responseAry = (array) $document;
+    $responseAry = (array)$document;
     $documentId = $responseAry[array_keys($responseAry)[0]];
     $this->setDocumentId($documentId);
     $entityManager->setUpdateHttpMethod(Request::METHOD_PUT);
@@ -726,14 +726,21 @@ class InvoiceForm extends FormBase {
     foreach ($receivers as $key => $receiver) {
       $to[] = new Recipient($receiver[0], $receiver[1], "", ($key + 1), 3, 30, $siteName . " has sent you a document to sign.");
     }
-    $invite = new Invite($siteInfo['signow_username'], $to, ["markmarkkutsenko@gmail.com", "ihordevsukr@gmail.com"]);
+    $ccStep = [];
+    foreach([1,2,3,4] as $key){
+      if(($step = $supplierDetails["when_cc{$key}"]) > 0){
+        array_push($ccStep, ['name' => "", 'email' => $supplierDetails["email_cc{$key}"], 'step' => $step]);
+      }
+    }
+    $invite = new Invite($siteInfo['signow_username'], $to, [], $ccStep);
     $response = $entityManager->create($invite, ['documentId' => $documentId]);
     $result = $this->resendFieldInvite($this->getInviteIds());
     return $result;
   }
 
   public
-  function getInviteIds() {
+  function getInviteIds()
+  {
     $curl = curl_init();
     curl_setopt_array($curl, [
       CURLOPT_URL => $this->apiUrl . '/document/' . $this->documentId,
@@ -759,7 +766,8 @@ class InvoiceForm extends FormBase {
   }
 
   public
-  function resendFieldInvite($inviteId) {
+  function resendFieldInvite($inviteId)
+  {
     $curl = curl_init();
 
     curl_setopt_array($curl, [
@@ -787,7 +795,8 @@ class InvoiceForm extends FormBase {
   }
 
   public
-  function cancelInvite($documentId) {
+  function cancelInvite($documentId)
+  {
     if ($_SERVER['HTTP_HOST'] === '127.0.0.7') {
       return 'success';
     }
@@ -816,17 +825,19 @@ class InvoiceForm extends FormBase {
   }
 
 
-  public function getDocumentStatusLink($documentId) {
+  public function getDocumentStatusLink($documentId)
+  {
     $this->makeToken();
     $response = $this->entityManager->create(new DownloadLink(), ['id' => $documentId]);
-    $responseAry = (array) $response;
+    $responseAry = (array)$response;
     $link = $responseAry[array_keys($responseAry)[0]];
     return $link;
   }
 
 
   public
-  function setSignStatus($documentId) {
+  function setSignStatus($documentId)
+  {
     $this->makeToken();
     $curl = curl_init();
     curl_setopt_array($curl, [
@@ -850,8 +861,7 @@ class InvoiceForm extends FormBase {
     $history = json_decode($response);
     if (isset($history->{404})) {
       return "Document not found";
-    }
-    else {
+    } else {
       $status = '';
       $signNum = 0;
       foreach ($history as $event) {
@@ -875,12 +885,13 @@ class InvoiceForm extends FormBase {
         ->condition('document_id', $documentId)
         ->execute();
 
-      return date('d/m/Y H:i:s'). "\n(".$signNum.")".$status;
+      return date('d/m/Y H:i:s') . "\n(" . $signNum . ")" . $status;
     }
   }
 
   public
-  function getSignDetails($invoiceId) {
+  function getSignDetails($invoiceId)
+  {
     $query = \Drupal::database()->select(self::$invoiceHeaderTblName, 'm')
       ->condition('id', $invoiceId)
       ->fields('m', ['esign_status', 'esign_last_checked', 'esign_signers']);
@@ -893,7 +904,8 @@ class InvoiceForm extends FormBase {
   }
 
   public
-  function checkOIV($invNum) {
+  function checkOIV($invNum)
+  {
     $query = \Drupal::database()->select(self::$invoiceHeaderTblName, 'm')
       ->condition('id', $invNum)
       ->fields('m', [
@@ -908,7 +920,8 @@ class InvoiceForm extends FormBase {
   }
 
 
-  function isUwsPeriodField($key) {
+  function isUwsPeriodField($key)
+  {
     return strpos($key, 'uws_period');
   }
 
@@ -921,11 +934,13 @@ class InvoiceForm extends FormBase {
    *
    * @return boolean true or false
    */
-  function isDocTypeField($key) {
+  function isDocTypeField($key)
+  {
     return $key === "doc_type";
   }
 
-  public static function getTblLastId() {
+  public static function getTblLastId()
+  {
     $last_id = \Drupal::database()
       ->query('SELECT MAX(id) FROM ' . self::$invoiceHeaderTblName)
       ->fetchField();
@@ -935,10 +950,11 @@ class InvoiceForm extends FormBase {
     return $last_id * 1 + 1;
   }
 
-  public function saveAndSend($fields, $invoiceDetails) {
+  public function saveAndSend($fields, $invoiceDetails)
+  {
     $pdfDetails = $this->getInvoiceHtml($fields, $invoiceDetails);
     $invoice_html = $pdfDetails[0];
-      $invoice_file = 'invoice-' . $fields['doc_number'] . '.pdf';
+    $invoice_file = 'invoice-' . $fields['doc_number'] . '.pdf';
 
     #instantiate and use the dompdf class
     $dompdf = new Dompdf();
@@ -964,20 +980,19 @@ class InvoiceForm extends FormBase {
           rename($fullPath, $fullPath1);
           $fields['invoice_file'] = $invoice_file;
           \Drupal::messenger()->addMessage("eSign invite Sent");
-        }
-        else {
+        } else {
           $fields['status'] = 2;
           \Drupal::messenger()->addMessage("eSign invite Failed");
         }
       }
-    }
-    else {
+    } else {
       \Drupal::messenger()->addMessage("Invoice generate failed");
     }
     return $fields;
   }
 
-  public function emailOnCreditCreation($invoiceId, $cnFile) {
+  public function emailOnCreditCreation($invoiceId, $cnFile)
+  {
     $db = \Drupal::database();
     $siteInfo = $this->siteInfo;
     $invoice = self::getInvoiceDetails($invoiceId, [
@@ -1023,18 +1038,19 @@ class InvoiceForm extends FormBase {
     $mail->MsgHTML($content);
     if (!$mail->Send()) {
       return "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-    }
-    else {
+    } else {
       return "Email sent successfully";
     }
   }
 
-  public static function getUsernameById($uid) {
+  public static function getUsernameById($uid)
+  {
     $account = \Drupal\user\Entity\User::load($uid); // pass your uid
     return $account->name->value;
   }
 
-  public static function getUserMailById($uid) {
+  public static function getUserMailById($uid)
+  {
     $query = \Drupal::database()->select('users_field_data', 'ufd')
       ->condition('uid', $uid)
       ->fields('ufd', ['mail']);
@@ -1043,14 +1059,16 @@ class InvoiceForm extends FormBase {
   }
 
 
-  public static function isSupplier() {
+  public static function isSupplier()
+  {
     return in_array('supplier', \Drupal::currentUser()->getRoles());
   }
 
   /**
    * Deny suppliers for specific routes
    */
-  public static function denySupplier() {
+  public static function denySupplier()
+  {
     $loggedIn = \Drupal::currentUser()->isAuthenticated();
     if (!self::isSupplier() && $loggedIn) {
       return AccessResult::allowed();
@@ -1059,7 +1077,8 @@ class InvoiceForm extends FormBase {
   }
 
 
-  public static function getInvoiceDetails($id, $fields) {
+  public static function getInvoiceDetails($id, $fields)
+  {
     $query = \Drupal::database()->select(self::$invoiceHeaderTblName, 'm')
       ->condition('id', $id)
       ->fields('m', $fields);
@@ -1067,7 +1086,8 @@ class InvoiceForm extends FormBase {
   }
 
 
-  static function random_str($length = 64, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string {
+  static function random_str($length = 64, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string
+  {
     if ($length < 1) {
       throw new \RangeException("Length must be a positive integer");
     }

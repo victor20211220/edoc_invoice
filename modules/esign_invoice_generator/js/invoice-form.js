@@ -157,5 +157,6 @@ $(document).on('change', `input[name="qty[]"], input[name="price_per[]"]`, funct
   $parentBlock = $(this).closest('.one-block');
   const qty = $parentBlock.find(`input[name="qty[]"]`).val();
   const pricePer = $parentBlock.find(`input[name="price_per[]"]`).val();
-  $parentBlock.find(`input[name="amount[]"]`).val(Math.round(qty * pricePer * 100) / 100);
+  if(qty && pricePer)
+    $parentBlock.find(`input[name="amount[]"]`).val((Math.round(qty * pricePer * 100) / 100).toFixed(2));
 })

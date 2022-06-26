@@ -12,9 +12,11 @@ use Drupal\Core\Database\Database;
  *
  * @package Drupal\esign_invoice_generator\Form
  */
-class SupplierForm extends FormBase {
+class SupplierForm extends FormBase
+{
 
-  public function getAllFields() {
+  public function getAllFields()
+  {
     return [
       'sup_ac' => t('Supplier A/C'),
       'company_name' => t('Company Name'),
@@ -27,20 +29,30 @@ class SupplierForm extends FormBase {
       'supplier_number' => t('Contact Number'),
       'supplier_role' => t('Contact Role'),
       'email' => t('Contact Email'),
+      'email_cc1' => t('Email CC1'),
+      'when_cc1' => t('When CC1'),
+      'email_cc2' => t('Email CC2'),
+      'when_cc2' => t('When CC2'),
+      'email_cc3' => t('Email CC3'),
+      'when_cc3' => t('When CC3'),
+      'email_cc4' => t('Email CC4'),
+      'when_cc4' => t('When CC4'),
     ];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
+  public function getFormId()
+  {
     return 'esign_invoice_generator_form';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state)
+  {
     $conn = Database::getConnection();
     $record = [];
     if (isset($_GET['num'])) {
@@ -51,14 +63,27 @@ class SupplierForm extends FormBase {
     }
     $fields = $this->getAllFields();
     $form = [];
+    $form['#attached']['library'] = [
+      'esign_invoice_generator/supplier_form',
+    ];
     foreach ($fields as $key => $field) {
-      $form[$key] = [
-        '#type' => $key == 'email' ? 'email' : 'textfield',
-        '#title' => $field,
-//        '#required' => in_array($key, ['sup_ac', 'email'])  ? true:false,
-        '#required' => true,
-        '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : '',
-      ];
+      if (in_array($key, ["when_cc1", "when_cc2", "when_cc3", "when_cc4"])) {
+        $form[$key] = [
+          '#type' => 'radios',
+          '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : 1,
+          '#options' => array(
+            1 => t('After 1 signed'),
+            2 => t('After 2 signed'),
+          ),
+        ];
+      } else {
+        $form[$key] = [
+          '#type' => in_array($key, ["email", "email_cc1", "email_cc2", "email_cc3", "email_cc4"]) ?
+            'email' : 'textfield',
+          '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : '',
+        ];
+      }
+      $form[$key] = array_merge($form[$key], ['#title' => $field, '#required' => true]);
     }
 
     $form['submit'] = [
@@ -71,14 +96,16 @@ class SupplierForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state)
+  {
     parent::validateForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state)
+  {
     $form_data = $form_state->getValues();
     $fields = $this->getAllFields();
     foreach ($fields as $key => $col) {
@@ -92,8 +119,7 @@ class SupplierForm extends FormBase {
         ->condition('id', $_GET['num'])
         ->execute();
       \Drupal::messenger()->addMessage("succesfully updated");
-    }
-    else {
+    } else {
       $query = \Drupal::database();
       $query->insert('suppliers')
         ->fields($fields)

@@ -37,17 +37,24 @@ class Invite extends Entity
     protected $cc;
 
     /**
+     * @var array
+     * @Serializer\Type("array")
+     */
+    protected $cc_step;
+
+    /**
      * Invite constructor.
      *
      * @param string $from
      * @param array  $to
      * @param array  $cc
      */
-    public function __construct(string $from, array $to, array $cc = [])
+    public function __construct(string $from, array $to, array $cc = [], array $ccStep = [])
     {
         $this->from = $from;
         $this->to = $to;
         $this->cc = $cc;
+        $this->cc_step = $ccStep;
     }
 
     /**
@@ -72,5 +79,13 @@ class Invite extends Entity
     public function getCc(): array
     {
         return $this->cc;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCcStep(): array
+    {
+        return $this->cc_step;
     }
 }

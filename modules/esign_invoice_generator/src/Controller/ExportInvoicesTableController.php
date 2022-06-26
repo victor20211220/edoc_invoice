@@ -138,8 +138,6 @@ class ExportInvoicesTableController extends ControllerBase {
           'U',
           'V',
           'W',
-          'X',
-          'Y',
         ];
 
         $lastInvoiceId = "";
@@ -160,11 +158,11 @@ class ExportInvoicesTableController extends ControllerBase {
           if ($lastInvoiceId === "" || $lastInvoiceId != $invoiceId) {
             if ($lastInvoiceId !== "") {
               $headerRow[5] = $this->formatPrice($ZTotal + $ATotal + $AVat + $CTotal + $CVat);
-              $headerRow[15] = $this->formatPrice($ZTotal);
-              $headerRow[18] = $this->formatPrice($ATotal);
-              $headerRow[19] = $this->formatPrice($AVat);
-              $headerRow[20] = $this->formatPrice($CTotal);
-              $headerRow[22] = $this->formatPrice($CVat);
+              $headerRow[13] = $this->formatPrice($ZTotal);
+              $headerRow[16] = $this->formatPrice($ATotal);
+              $headerRow[17] = $this->formatPrice($AVat);
+              $headerRow[18] = $this->formatPrice($CTotal);
+              $headerRow[20] = $this->formatPrice($CVat);
               foreach ($alphas as $rKey => $alpha) {
                 $a1InvoSheet->setCellValue($alpha . ($rInd), $headerRow[$rKey]);
                 if ($rKey < 10) {
@@ -246,8 +244,6 @@ class ExportInvoicesTableController extends ControllerBase {
               $invoiceM,
               $invoice->sup_ac,
               $invoiceDate,
-              "invoice->qty",
-              "invoice->price_per",
               "",
               "Z",
               0,
@@ -282,7 +278,7 @@ class ExportInvoicesTableController extends ControllerBase {
             "01",
             "7-01",
             "04-" . $nominalCodes['type'][$invoiceType] . "-" . $nominalCodes['dept'][$invoice->dept] . "",
-            $nominalCodes['type_desc'][$invoiceType] . " " . $invoicePeriod . " " . $invoice->description,
+            "{$nominalCodes['type_desc'][$invoiceType]} {$invoicePeriod} {$invoice->qty}x{$invoice->price_per} {$invoice->description}",
             $net,
             $invoice->vat,
           ];
@@ -292,11 +288,11 @@ class ExportInvoicesTableController extends ControllerBase {
           array_push($details, $row);
           if ($key + 1 == $invoiceCnt) {
             $headerRow[5] = $this->formatPrice($ZTotal + $ATotal + $AVat + $CTotal + $CVat);
-            $headerRow[15] = $this->formatPrice($ZTotal);
-            $headerRow[17] = $this->formatPrice($ATotal);
-            $headerRow[19] = $this->formatPrice($AVat);
-            $headerRow[20] = $this->formatPrice($CTotal);
-            $headerRow[22] = $this->formatPrice($CVat);
+            $headerRow[13] = $this->formatPrice($ZTotal);
+            $headerRow[15] = $this->formatPrice($ATotal);
+            $headerRow[17] = $this->formatPrice($AVat);
+            $headerRow[18] = $this->formatPrice($CTotal);
+            $headerRow[20] = $this->formatPrice($CVat);
             foreach ($alphas as $rKey => $alpha) {
               $a1InvoSheet->setCellValue($alpha . ($rInd), $headerRow[$rKey]);
               if ($rKey < 10) {

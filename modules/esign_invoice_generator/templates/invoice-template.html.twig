@@ -172,9 +172,7 @@
     /* article */
 
     article,
-    article address,
-    table.meta,
-    table.inventory {
+    article address{
       margin-bottom: 1em;
     }
 
@@ -231,76 +229,6 @@
       margin-bottom: 1em;
     }
 
-    /* table meta & balance */
-
-    table.meta,
-    table.balance {
-      float: right;
-      width: 36%;
-    }
-
-    table.meta:after,
-    table.balance:after {
-      clear: both;
-      content: "";
-      display: table;
-    }
-
-    /* table meta */
-
-    table.meta th {
-      width: 40%;
-    }
-
-    table.meta td {
-      width: 60%;
-    }
-
-    /* table items */
-
-    table.inventory {
-      clear: both;
-      width: 100%;
-    }
-
-    table.inventory th {
-      font-weight: bold;
-      text-align: center;
-    }
-
-    table.inventory td:nth-child(1) {
-      width: 26%;
-    }
-
-    table.inventory td:nth-child(2) {
-      width: 38%;
-    }
-
-    table.inventory td:nth-child(3) {
-      text-align: right;
-      width: 12%;
-    }
-
-    table.inventory td:nth-child(4) {
-      text-align: right;
-      width: 12%;
-    }
-
-    table.inventory td:nth-child(5) {
-      text-align: right;
-      width: 12%;
-    }
-
-    /* table balance */
-
-    table.balance th,
-    table.balance td {
-      width: 50%;
-    }
-
-    table.balance td {
-      text-align: right;
-    }
 
     table {
       border-top: solid 2px black;
@@ -322,6 +250,7 @@
       border: none;
     }
 
+    tbody tr td:nth-child(3),
     tbody tr td:nth-child(5),
     tbody tr td:nth-child(7),
     .result-tr td:nth-child(3),
