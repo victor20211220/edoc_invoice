@@ -24,3 +24,7 @@ input:disabled {
 .color-red{
   color: red;
 }
+
+input:read-only{
+  background-color:rgba(239, 239, 239, 0.3);
+}

@@ -16,17 +16,20 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  *
  * @package Drupal\esign_invoice_generator\irs_form
  */
-class IrsForm extends FormBase {
+class IrsForm extends FormBase
+{
 
   static $irsHeaderTblName = 'invoice_recurring_setup_header';
 
   static $irsDetailsTblName = 'invoice_recurring_setup_details';
 
-  public function getFormId() {
+  public function getFormId()
+  {
     return 'esign_invoice_generator_irsform';
   }
 
-  public static function getHeaderFields() {
+  public static function getHeaderFields()
+  {
     return [
       'supplier_id' => t('Supplier:'),
       'uws_ref' => t('Our Ref:'),
@@ -42,7 +45,8 @@ class IrsForm extends FormBase {
   /**
    * build form
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state)
+  {
     $db = \Drupal::database();
     $form['#attached']['library'] = [
       'esign_invoice_generator/invoice_form',
@@ -118,20 +122,35 @@ class IrsForm extends FormBase {
             '#title' => $i == 0 ? $label : '',
             '#required' => FALSE,
             '#value' => $detailRow->{$key},
+            '#type' => 'select',
           ];
           if (isset($isManage)) {
             $form[$multi_key]['#attributes'] = ['disabled' => 'disabled'];
           }
-          if ($key == 'amount') {
-            $form[$multi_key]['#default_value'] = 0;
-            $form[$multi_key]['#step'] = 0.01;
-          }
-          if (!in_array($key, ['description', 'amount'])) {
-            $form[$multi_key]['#type'] = 'select';
-            $form[$multi_key]['#options'] = $options[$key];
-          }
-          else {
-            $form[$multi_key]['#type'] = $key == 'amount' ? 'number' : 'textfield';
+          switch ($key) //generate different inputs per key
+          {
+            case 'dept':
+            case 'type':
+            case 'vat':
+              $form[$multi_key]['#options'] = $options[$key];
+              break;
+            case 'qty':
+              $form[$multi_key]['#type'] = 'number';
+              $form[$multi_key]['#default_value'] = 1;
+              break;
+            case 'price_per':
+            case 'amount':
+              $form[$multi_key]['#type'] = 'number';
+              $form[$multi_key]['#default_value'] = 0;
+              if ($key === "amount") {
+                $form[$multi_key]['#attributes'] = ['readonly' => ''];
+              } else {
+                $form[$multi_key]['#step'] = 0.01;
+              }
+              break;
+            case 'description':
+              $form[$multi_key]['#type'] = 'textfield';
+              break;
           }
         }
         $delBtnAttrs = ['class' => ['delete-row']];
@@ -146,24 +165,39 @@ class IrsForm extends FormBase {
         $form['dept-' . $i . '-[]']['#prefix'] = '<div class="one-block">';
         $form['delete' . $i]['#suffix'] = '</div>';
       }
-    }
-    else {
+    } else {
       foreach ($detailFields as $key => $label) {
         $multi_key = $key . '[]';
         $form[$multi_key] = [
           '#title' => $label,
           '#required' => FALSE,
+          '#type' => 'select',
         ];
-        if ($key == 'amount') {
-          $form[$multi_key]['#default_value'] = 0;
-          $form[$multi_key]['#step'] = 0.01;
-        }
-        if (!in_array($key, ['description', 'amount'])) {
-          $form[$multi_key]['#type'] = 'select';
-          $form[$multi_key]['#options'] = $options[$key];
-        }
-        else {
-          $form[$multi_key]['#type'] = $key == 'amount' ? 'number' : 'textfield';
+
+        switch ($key) //generate different inputs per key
+        {
+          case 'dept':
+          case 'type':
+          case 'vat':
+            $form[$multi_key]['#options'] = $options[$key];
+            break;
+          case 'qty':
+            $form[$multi_key]['#type'] = 'number';
+            $form[$multi_key]['#default_value'] = 1;
+            break;
+          case 'price_per':
+          case 'amount':
+            $form[$multi_key]['#type'] = 'number';
+            $form[$multi_key]['#default_value'] = 0;
+            if ($key === "amount") {
+              $form[$multi_key]['#attributes'] = ['readonly' => ''];
+            } else {
+              $form[$multi_key]['#step'] = 0.01;
+            }
+            break;
+          case 'description':
+            $form[$multi_key]['#type'] = 'textfield';
+            break;
         }
       }
       $form['delete'] = [
@@ -188,10 +222,10 @@ class IrsForm extends FormBase {
         'cancel_replace' => 'Cancel and Replace',
         'clone' => 'Clone',
       ];
-      if($row['is_active'] == false){
+      if ($row['is_active'] == false) {
         unset($manageButtons['stop']);
         unset($manageButtons['cancel_replace']);
-        $form['username']['#prefix'] = "<label>".InvoiceForm::getUsernameById($row['last_changed_by_user_id'])." changed on ".date('d/m/Y H:i:s', strtotime($row['date_last_changed']))."</label>";
+        $form['username']['#prefix'] = "<label>" . InvoiceForm::getUsernameById($row['last_changed_by_user_id']) . " changed on " . date('d/m/Y H:i:s', strtotime($row['date_last_changed'])) . "</label>";
       }
       foreach ($manageButtons as $key => $value) {
         $form[$key] = [
@@ -203,8 +237,7 @@ class IrsForm extends FormBase {
       $form['#attached']['drupalSettings'] = [
         'manage' => 1
       ];
-    }
-    else {
+    } else {
 
       $form['save_and_clone'] = [
         '#type' => 'hidden',
@@ -228,13 +261,15 @@ class IrsForm extends FormBase {
   }
 
   public
-  function validateForm(array &$form, FormStateInterface $form_state) {
+  function validateForm(array &$form, FormStateInterface $form_state)
+  {
     parent::validateForm($form, $form_state);
   }
 
 
   public
-  function submitForm(array &$form, FormStateInterface $form_state) {
+  function submitForm(array &$form, FormStateInterface $form_state)
+  {
     $redirect = ["list_irs", []];
     if (isset($_GET['action'])) {
       if ($_GET['action'] === 'manage') {
@@ -295,7 +330,7 @@ class IrsForm extends FormBase {
         $invoiceDetailRow = ['header_id' => $irsId];
         foreach ($detailFields as $key) {
           $val = $invoiceDetails[$key][$i];
-          if ($key == "amount" && $val == "") {
+          if (in_array($key, ["price_per", "amount", "qty"]) && $val == "") {
             $val = 0;
           }
           $invoiceDetailRow[$key] = $val;
@@ -313,11 +348,13 @@ class IrsForm extends FormBase {
     $form_state->setRedirect("esign_invoice_generator." . $redirect[0], $redirect[1]);
   }
 
-  function isKeyRp($key) {
+  function isKeyRp($key)
+  {
     return $key === "recurring_period";
   }
 
-  function getTypeFromFormKey($key) {
+  function getTypeFromFormKey($key)
+  {
     switch ($key) {
       case 'supplier_id' :
         $type = "select";
@@ -336,11 +373,11 @@ class IrsForm extends FormBase {
     return $type;
   }
 
-  public static function getOptionsFromFormKey($key) {
+  public static function getOptionsFromFormKey($key)
+  {
     if ($key === "supplier_id") {
       $options = SuppliersTableController::getSuppliersOptions();
-    }
-    else {
+    } else {
       $options = [
         'DAY' => t('days'),
         'WEEK' => t('weeks'),
@@ -351,7 +388,8 @@ class IrsForm extends FormBase {
     return $options;
   }
 
-  function stopIrs($irsId) {
+  function stopIrs($irsId)
+  {
     $updateFields = [
       'is_active' => 0,
       'date_last_changed' => self::dbDateTime(),
@@ -363,11 +401,13 @@ class IrsForm extends FormBase {
       ->execute();
   }
 
-  public static function dbDateTime() {
+  public static function dbDateTime()
+  {
     return date('Y-m-d H:i:s');
   }
 
-  public static function getCurrentUserId() {
+  public static function getCurrentUserId()
+  {
     return \Drupal::currentUser()->id();
   }
 }

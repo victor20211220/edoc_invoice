@@ -37,7 +37,9 @@ class ImportInvoicesTableController extends ControllerBase {
       'doc_type',
       'dept',
       'type',
+      'qty',
       'description',
+      'price_per',
       'vat',
       'amount',
     ];
@@ -61,7 +63,9 @@ class ImportInvoicesTableController extends ControllerBase {
       'id',
       'dept',
       'type',
+      'qty',
       'description',
+      'price_per',
       'vat',
       'amount',
     ];
@@ -80,7 +84,9 @@ class ImportInvoicesTableController extends ControllerBase {
       'doc_type' => t('Type'),
       'dept' => t('Dept'),
       'type' => t('Type'),
+      'qty' => t('Qty'),
       'description' => t('Description'),
+      'price_per' => t('Price Per'),
       'vat' => t('Vat'),
       'amount' => t('Amount'),
       'imported_on' => t('Created at'),
@@ -346,6 +352,8 @@ class ImportInvoicesTableController extends ControllerBase {
           ->fields('m', ['id'])->execute()->fetchAssoc();
         $check = $option !== FALSE;
         break;
+      case 'qty':
+      case 'price_per':
       case 'amount':
         $check = is_numeric($value);
         break;

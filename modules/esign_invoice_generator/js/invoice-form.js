@@ -8,7 +8,7 @@ var qs = (function(a) {
     for (var i = 0; i < a.length; ++i)
     {
         var p=a[i].split('=', 2);
-        if (p.length == 1)
+        if (p.length === 1)
             b[p[0]] = "";
         else
             b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
@@ -17,7 +17,7 @@ var qs = (function(a) {
 })(window.location.search.substr(1).split('&'));
 
 $(function () {
-  ['description', 'vat', 'type', 'amount', 'dept'].map(function (name) {
+  ["dept","type", "qty", "description", "price_per", "vat", "amount", ].forEach( (name) => {
     $('[name^=' + name + ']').attr('name', name + '[]');
   })
   clonedHtml = $('.one-block:nth-child(2)').clone(true);
@@ -28,9 +28,7 @@ $(function () {
   clonedHtml.find('label').remove();
   newRowHtml = clonedHtml.prop('outerHTML');
 });
-
-
-$('#edit-add').click(function (e) {
+$('#edit-add').click(function (e) { //when add new detail row
   e.preventDefault();
   var rowLen = $("#invoice-form").find(".one-block").length;
   if (rowLen === 0) {
@@ -40,6 +38,7 @@ $('#edit-add').click(function (e) {
     $('.one-block [name="type[]"]').val(firstTypeVal);
     $('.one-block input[type!=submit]').val('');
     $('.one-block input[type=number]').val(0);
+    $(`input[name="qty[]"]`).val(1);
   }
   else {
     $(newRowHtml).insertAfter('.one-block:nth-child(' + (rowLen + 1) + ')');
@@ -49,6 +48,7 @@ $('#edit-add').click(function (e) {
     $(newOneBlockSelector + ' [name="type[]"]').val(firstTypeVal);
     $(newOneBlockSelector + ' input[type!=submit]').val('');
     $(newOneBlockSelector + ' input[type=number]').val(0);
+    $(`${newOneBlockSelector} input[name="qty[]"]`).val(1);
   }
   $('#edit-save, #edit-save-send, #edit-save-clone').removeAttr('disabled');
 });
@@ -153,3 +153,9 @@ function validatePeriod(from, to) {
     }
   });
 }
+$(document).on('change', `input[name="qty[]"], input[name="price_per[]"]`, function(){
+  $parentBlock = $(this).closest('.one-block');
+  const qty = $parentBlock.find(`input[name="qty[]"]`).val();
+  const pricePer = $parentBlock.find(`input[name="price_per[]"]`).val();
+  $parentBlock.find(`input[name="amount[]"]`).val(Math.round(qty * pricePer * 100) / 100);
+})

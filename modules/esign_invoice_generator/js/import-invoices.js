@@ -17,7 +17,7 @@ $(document).on('click', '[data-btn-flag]', function () {
     .rows(function (idx, data, node) {
       // Get all the checkboxes in the row
       if(btnFlag === 2){
-        return data[18] === '0'
+        return data[20] === '0'
       }else{
         var cells = $(node).find('input[type="checkbox"]');
         return checkedTargets(cells).length;
@@ -31,7 +31,7 @@ $(document).on('click', '[data-btn-flag]', function () {
   else {
     var selectedIds = [];
     selectedRows.map(function (row) {
-      selectedIds.push(row[17]);
+      selectedIds.push(row[19]);
     })
     selectedIds = selectedIds.join(',');
     var confirmMsg = btnFlag !== 0 ? "Delete all " + (btnFlag === 1 ? "ticked" : "invalid") +" records?" : "Are you sure you want to generate these invoices ?";
@@ -66,9 +66,9 @@ function doFilter() {
     function (settings, data, dataIndex) {
       var validVal = $('[name=valid]:checked').val();
       var invoicedVal = $('[name=invoiced]:checked').val();
-      var invoiced = (data[15] === "") ? "0" : "1";
+      var invoiced = (data[17] === "") ? "0" : "1";
 
-      return !!((validVal === "all" || validVal === data[18] ) &&
+      return !!((validVal === "all" || validVal === data[20] ) &&
         (invoicedVal === "all" || invoicedVal === invoiced));
     }
   );
@@ -132,7 +132,7 @@ function initDatatable() {
           var checkbox = $("<input/>", {
             "type": "checkbox"
           });
-          if (row[0] == "1" && row[18] == "1") {
+          if (row[0] == "1" && row[20] == "1") {
             checkbox.attr("checked", "checked");
             checkbox.addClass("checkbox_checked");
           }
@@ -150,7 +150,7 @@ function initDatatable() {
       // className: 'select-checkbox',
       targets: 0
     }, {
-      "targets": [17, 18],
+      "targets": [19, 20],
       "visible": false
     }],
     "select": {

@@ -77,7 +77,9 @@ class InvoiceForm extends FormBase {
     return [
       'dept' => t('Dept'),
       'type' => t('Type'),
+      'qty' => t('Qty'),
       'description' => t('Description'),
+      'price_per' => t('Price per'),
       'vat' => t('Vat%'),
       'amount' => t('Amount'),
     ];
@@ -322,22 +324,41 @@ class InvoiceForm extends FormBase {
                   }
                 }
                 else {
-                  foreach ($detailFields as $key => $label) {
+                  foreach ($detailFields as $key => $label)
+                  {
                     $multi_key = $key . '[]';
                     $form[$multi_key] = [
                       '#title' => $label,
                       '#required' => FALSE,
+                      '#type' => 'select',
                     ];
-                    if ($key == 'amount') {
-                      $form[$multi_key]['#default_value'] = 0;
-                      $form[$multi_key]['#step'] = 0.01;
-                    }
-                    if (!in_array($key, ['description', 'amount'])) {
-                      $form[$multi_key]['#type'] = 'select';
-                      $form[$multi_key]['#options'] = $options[$key];
-                    }
-                    else {
-                      $form[$multi_key]['#type'] = $key == 'amount' ? 'number' : 'textfield';
+                    switch ($key) //generate different inputs per key
+                    {
+                      case 'dept':
+                      case 'type':
+                      case 'vat':
+                        $form[$multi_key]['#options'] = $options[$key];
+                        break;
+                      case 'qty':
+                        $form[$multi_key]['#type'] = 'number';
+                        $form[$multi_key]['#default_value'] = 1;
+                        break;
+                      case 'price_per':
+                      case 'amount':
+                        $form[$multi_key]['#type'] = 'number';
+                        $form[$multi_key]['#default_value'] = 0;
+                        if($key === "amount")
+                        {
+                          $form[$multi_key]['#attributes'] = ['readonly' => ''];
+                        }
+                        else
+                        {
+                          $form[$multi_key]['#step'] = 0.01;
+                        }
+                        break;
+                      case 'description':
+                        $form[$multi_key]['#type'] = 'textfield';
+                        break;
                     }
                   }
                   $form['delete'] = [
@@ -435,9 +456,6 @@ class InvoiceForm extends FormBase {
       $invoiceDetails[$key] = $form_data[$key];
     };
     if ($form_data['send_to_signnow']) {
-      //      print_r($fields);
-      //      print_r($invoiceDetails);
-      //      exit();
       $fields = $this->saveAndSend($fields, $invoiceDetails);
     }
     \Drupal::messenger()->addMessage("Invoice generated");
@@ -452,7 +470,7 @@ class InvoiceForm extends FormBase {
       $invoiceDetailRow = ['invoice_id' => $last_id];
       foreach ($detail_keys as $detail_key) {
         $val = $invoiceDetails[$detail_key][$i];
-        if ($detail_key == "amount" && $val == "") {
+        if (in_array($detail_key, ["price_per", "amount", "qty"]) && $val == "") {
           $val = 0;
         }
         $invoiceDetailRow[$detail_key] = $val;
@@ -513,7 +531,7 @@ class InvoiceForm extends FormBase {
       $row = '<tr>';
       foreach ($detail_keys as $detail_key) {
         $val = $invoiceDetails[$detail_key][$i];
-        if (!in_array($detail_key, ['description', 'amount'])) {
+        if (!in_array($detail_key, ["qty", "description", "price_per", "amount"])) {
           if ($detail_key == 'vat') {
             $vatVal = $vats[$val];
             $net = (float) $invoiceDetails['amount'][$i] * 1;
@@ -528,7 +546,7 @@ class InvoiceForm extends FormBase {
             }
           }
         }
-        if ($detail_key == 'amount') {
+        if (in_array($detail_key, ['price_per', 'amount'])) {
           $val = number_format((float) $val, 2, '.', ' ');
         }
         $row .= '<td>' . $val . '</td>';
@@ -644,7 +662,7 @@ class InvoiceForm extends FormBase {
   }
   public
   function sendToSignNow($filePath, $uwsEmail, $supplierEmail, $detailCount, $docType) {
-    if ($_SERVER['HTTP_HOST'] === '127.0.0.7') {
+    if (self::isLocal()) { //disable send pdf document to sign now on local
       $this->setDocumentId('local-doc-id');
       return 'success';
     }
@@ -708,7 +726,7 @@ class InvoiceForm extends FormBase {
     foreach ($receivers as $key => $receiver) {
       $to[] = new Recipient($receiver[0], $receiver[1], "", ($key + 1), 3, 30, $siteName . " has sent you a document to sign.");
     }
-    $invite = new Invite($siteInfo['signow_username'], $to, []);
+    $invite = new Invite($siteInfo['signow_username'], $to, ["markmarkkutsenko@gmail.com", "ihordevsukr@gmail.com"]);
     $response = $entityManager->create($invite, ['documentId' => $documentId]);
     $result = $this->resendFieldInvite($this->getInviteIds());
     return $result;
@@ -937,8 +955,7 @@ class InvoiceForm extends FormBase {
     if ($make_invoice !== FALSE) {
       $fields['invoice_file'] = $invoice_file;
       if ($fields['doc_type'] === 'i') {
-        if(!self::isLocal())
-          $apiResult = $this->sendToSignNow($fullPath, $pdfDetails[1], $pdfDetails[2], $pdfDetails[3], $fields['doc_type']);
+        $apiResult = $this->sendToSignNow($fullPath, $pdfDetails[1], $pdfDetails[2], $pdfDetails[3], $fields['doc_type']);
         if ($apiResult == 'success') {
           $fields['status'] = 1;
           $fields['document_id'] = $this->documentId;

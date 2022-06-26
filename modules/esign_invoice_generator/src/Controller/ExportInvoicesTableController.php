@@ -30,7 +30,9 @@ class ExportInvoicesTableController extends ControllerBase {
       'uws_period_to' => t('Period To'),
       'dept' => t('Dept'),
       'type' => t('Type'),
+      'qty' => t('Qty'),
       'description' => t('Description'),
+      'price_per' => t('Price Per'),
       'vat' => t('Vat'),
       'vat_rate' => t('Vat Rate'),
       'amount' => t('Amount'),
@@ -94,7 +96,7 @@ class ExportInvoicesTableController extends ControllerBase {
         $query->leftJoin('suppliers', 'm', "[inv].[supplier_id] = [m].[id]");
         $query->fields('m', ['sup_ac']);
         $query->leftJoin(InvoiceForm::$invoiceDetailsTblName, 'det', "[inv].[id] = [det].[invoice_id]");
-        $query->fields('det', ['dept', 'type', 'description', 'vat', 'vat_rate', 'amount']);
+        $query->fields('det', ['dept', 'type', "qty", 'description', "price_per", 'vat', 'vat_rate', 'amount']);
         $query->orderBy('[inv].[id]', 'DESC');
         $results = $query->execute()->fetchAll();
 
@@ -136,6 +138,8 @@ class ExportInvoicesTableController extends ControllerBase {
           'U',
           'V',
           'W',
+          'X',
+          'Y',
         ];
 
         $lastInvoiceId = "";
@@ -156,11 +160,11 @@ class ExportInvoicesTableController extends ControllerBase {
           if ($lastInvoiceId === "" || $lastInvoiceId != $invoiceId) {
             if ($lastInvoiceId !== "") {
               $headerRow[5] = $this->formatPrice($ZTotal + $ATotal + $AVat + $CTotal + $CVat);
-              $headerRow[13] = $this->formatPrice($ZTotal);
-              $headerRow[16] = $this->formatPrice($ATotal);
-              $headerRow[17] = $this->formatPrice($AVat);
-              $headerRow[19] = $this->formatPrice($CTotal);
-              $headerRow[20] = $this->formatPrice($CVat);
+              $headerRow[15] = $this->formatPrice($ZTotal);
+              $headerRow[18] = $this->formatPrice($ATotal);
+              $headerRow[19] = $this->formatPrice($AVat);
+              $headerRow[20] = $this->formatPrice($CTotal);
+              $headerRow[22] = $this->formatPrice($CVat);
               foreach ($alphas as $rKey => $alpha) {
                 $a1InvoSheet->setCellValue($alpha . ($rInd), $headerRow[$rKey]);
                 if ($rKey < 10) {
@@ -242,6 +246,8 @@ class ExportInvoicesTableController extends ControllerBase {
               $invoiceM,
               $invoice->sup_ac,
               $invoiceDate,
+              "invoice->qty",
+              "invoice->price_per",
               "",
               "Z",
               0,
@@ -286,11 +292,11 @@ class ExportInvoicesTableController extends ControllerBase {
           array_push($details, $row);
           if ($key + 1 == $invoiceCnt) {
             $headerRow[5] = $this->formatPrice($ZTotal + $ATotal + $AVat + $CTotal + $CVat);
-            $headerRow[13] = $this->formatPrice($ZTotal);
-            $headerRow[16] = $this->formatPrice($ATotal);
-            $headerRow[17] = $this->formatPrice($AVat);
-            $headerRow[19] = $this->formatPrice($CTotal);
-            $headerRow[20] = $this->formatPrice($CVat);
+            $headerRow[15] = $this->formatPrice($ZTotal);
+            $headerRow[17] = $this->formatPrice($ATotal);
+            $headerRow[19] = $this->formatPrice($AVat);
+            $headerRow[20] = $this->formatPrice($CTotal);
+            $headerRow[22] = $this->formatPrice($CVat);
             foreach ($alphas as $rKey => $alpha) {
               $a1InvoSheet->setCellValue($alpha . ($rInd), $headerRow[$rKey]);
               if ($rKey < 10) {
@@ -368,7 +374,7 @@ class ExportInvoicesTableController extends ControllerBase {
       //create table header
       $header_table = $this->getFields();
       $fields = array_keys($this->getFields());
-      array_splice($fields, 9, 6);
+      array_splice($fields, 9, 8);
 
       //select records from table
       $query = $conn->select(InvoiceForm::$invoiceHeaderTblName, 'inv');
@@ -376,7 +382,7 @@ class ExportInvoicesTableController extends ControllerBase {
       $query->leftJoin('suppliers', 'm', "[inv].[supplier_id] = [m].[id]");
       $query->fields('m', ['sup_ac']);
       $query->leftJoin(InvoiceForm::$invoiceDetailsTblName, 'det', "[inv].[id] = [det].[invoice_id]");
-      $query->fields('det', ['dept', 'type', 'description', 'vat', 'vat_rate', 'amount']);
+      $query->fields('det', ['dept', 'type', 'qty', 'description', "price_per", 'vat', 'vat_rate', 'amount']);
       $query->orderBy('id', 'DESC');
       $results = $query->execute()->fetchAll();
       $fields = array_keys($this->getFields());

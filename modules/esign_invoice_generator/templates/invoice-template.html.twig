@@ -312,7 +312,7 @@
       border-bottom: 0px;
     }
 
-    tbody tr td:nth-child(4) {
+    tbody tr td:nth-child(6) {
       text-align: center;
     }
 
@@ -323,6 +323,7 @@
     }
 
     tbody tr td:nth-child(5),
+    tbody tr td:nth-child(7),
     .result-tr td:nth-child(3),
     .result-tr td:nth-child(5){
       text-align: right;
@@ -447,11 +448,13 @@
     <table>
       <thead class="text-center">
       <tr>
-        <th width="30%">Dept</th>
-        <th width="15%">Type</th>
-        <th width="30%">Description</th>
+        <th width="23%">Dept</th>
+        <th width="17%">Type</th>
+        <th width="10%">Qty</th>
+        <th width="20%">Description</th>
+        <th width="10%">Price Per</th>
         <th width="10%">Vat %</th>
-        <th width="15%">Amount</th>
+        <th width="10%">Amount</th>
       </tr>
       </thead>
       <tbody>
@@ -459,22 +462,24 @@
 {#      <tr>#}
 {#        <td></td>#}
 {#        <td>Damages</td>#}
+{#        <td>1</td>#}
 {#        <td>something here</td>#}
+{#        <td>0.00</td>#}
 {#        <td>A</td>#}
-{#        <td>1.00</td>#}
+{#        <td>0.00</td>#}
 {#      </tr>#}
       <tr class="result-tr">
-        <td colspan="3"></td>
+        <td colspan="5"></td>
         <td>Net</td>
         <td>{{total_net}}</td>
       </tr>
       <tr class="result-tr">
-        <td colspan="3"></td>
+        <td colspan="5"></td>
         <td>Vat</td>
         <td>{{total_vat}}</td>
       </tr>
       <tr class="result-tr text-bold">
-        <td colspan="3"></td>
+        <td colspan="5"></td>
         <td>Total Due</td>
         <td>{{total_due}}</td>
       </tr>

@@ -56,7 +56,7 @@ function doFilter() {
 
       var minD = $('#minD').val();
       var maxD = $('#maxD').val();
-      var date = swapDayMonth(data[19]).getTime();
+      var date = swapDayMonth(data[21]).getTime();
       if (!noDateVal(minD)) {
         minD = new Date(minD);
         minD.setHours(0, 0, 0, 0);
@@ -68,7 +68,7 @@ function doFilter() {
         maxD = maxD.getTime();
       }
       var statusVal = $('#status').val();
-      var status = data[18];
+      var status = data[20];
 
       var invoiceSentVal = $('[name=invoice_sent]:checked').val();
       var invoiceSent = (status === "Created") ? "0" : "1";
@@ -78,8 +78,8 @@ function doFilter() {
       var documentType = (data[2] === "Credit Note") ? "c" : "i";
 
       var isExportedVal = $('[name=is_exported]:checked').val();
-      var isExported = data[23];
-      var isExported1 = data[24];
+      var isExported = data[25];
+      var isExported1 = data[26];
       var isA1Filter = isExportedVal.indexOf('1') !== -1;
       return !!(((isNaN(min) && isNaN(max)) ||
         (isNaN(min) && invoiceNum <= max) ||
@@ -168,7 +168,7 @@ function initDatatable() {
   dt = $('#invoices-table').DataTable({
     "columnDefs": [
       {
-        "targets": [0,7,8,11,13,14,15,16,19,20,21,25],
+        "targets": [0,7,8,11,12,13,15,16,17,18,21,22,23,26],
         "visible": false
       }
     ],
