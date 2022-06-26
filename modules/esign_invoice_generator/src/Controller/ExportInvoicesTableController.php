@@ -278,7 +278,7 @@ class ExportInvoicesTableController extends ControllerBase {
             "01",
             "7-01",
             "04-" . $nominalCodes['type'][$invoiceType] . "-" . $nominalCodes['dept'][$invoice->dept] . "",
-            "{$nominalCodes['type_desc'][$invoiceType]} {$invoicePeriod} {$invoice->qty}x{$invoice->price_per} {$invoice->description}",
+            "{$nominalCodes['type_desc'][$invoiceType]} {$invoicePeriod} {$invoice->qty}x ". InvoiceForm::doubleFormat($invoice->price_per). " {$invoice->description}",
             $net,
             $invoice->vat,
           ];

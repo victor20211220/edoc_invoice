@@ -70,8 +70,9 @@ class SupplierForm extends FormBase
       if (in_array($key, ["when_cc1", "when_cc2", "when_cc3", "when_cc4"])) {
         $form[$key] = [
           '#type' => 'radios',
-          '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : 1,
+          '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : 0,
           '#options' => array(
+            0 => t('Immediate'),
             1 => t('After 1 signed'),
             2 => t('After 2 signed'),
           ),

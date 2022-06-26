@@ -727,12 +727,16 @@ class InvoiceForm extends FormBase
       $to[] = new Recipient($receiver[0], $receiver[1], "", ($key + 1), 3, 30, $siteName . " has sent you a document to sign.");
     }
     $ccStep = [];
+    $cc = [];
     foreach([1,2,3,4] as $key){
+      $email = $supplierDetails["email_cc{$key}"];
       if(($step = $supplierDetails["when_cc{$key}"]) > 0){
-        array_push($ccStep, ['name' => "", 'email' => $supplierDetails["email_cc{$key}"], 'step' => $step]);
+        array_push($ccStep, ['name' => "", 'email' => $email, 'step' => $step]);
+      }else{
+        array_push($cc, $email);
       }
     }
-    $invite = new Invite($siteInfo['signow_username'], $to, [], $ccStep);
+    $invite = new Invite($siteInfo['signow_username'], $to, $cc, $ccStep);
     $response = $entityManager->create($invite, ['documentId' => $documentId]);
     $result = $this->resendFieldInvite($this->getInviteIds());
     return $result;
@@ -1104,4 +1108,8 @@ class InvoiceForm extends FormBase
     return \Drupal::request()->getHost() === "127.0.0.21";
   }
 
+  static function doubleFormat($number = 0)
+  {
+    return number_format($number,2,".",".");
+  }
 }
