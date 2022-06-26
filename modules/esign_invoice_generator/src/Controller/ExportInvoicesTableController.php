@@ -440,7 +440,7 @@ class ExportInvoicesTableController extends ControllerBase {
               $val = isset($detailOptions[$val]) ? $detailOptions[$val] : "";
               break;
             case 'price_per':
-              $val = InvoiceForm::doubleFormat($val);
+              $val = InvoiceForm::doubleFormat($val)." ";
               break;
             case 'vat_rate':
               $val .= "%";
