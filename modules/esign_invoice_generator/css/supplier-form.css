@@ -3,6 +3,7 @@
   margin-right: 5%;
   display: inline-block;
 }
-.form-item-email {
+.form-item-email,
+#edit-submit {
     display: block;
 }
