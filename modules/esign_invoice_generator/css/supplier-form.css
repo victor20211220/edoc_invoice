@@ -1,9 +1,9 @@
-.form-item{
+.form-group > .form-item{
   width: 40%;
   margin-right: 5%;
   display: inline-block;
 }
-.form-item-email,
-#edit-submit {
-    display: block;
+.js-form-type-radio {
+    display: inline-block;
+    margin-right: 20px;
 }

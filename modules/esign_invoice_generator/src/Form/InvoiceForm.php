@@ -730,10 +730,12 @@ class InvoiceForm extends FormBase
     $cc = [];
     foreach([1,2,3,4] as $key){
       $email = $supplierDetails["email_cc{$key}"];
-      if(($step = $supplierDetails["when_cc{$key}"]) > 0){
-        array_push($ccStep, ['name' => "", 'email' => $email, 'step' => $step]);
-      }else{
-        array_push($cc, $email);
+      if($email){
+        if(($step = $supplierDetails["when_cc{$key}"]) > 0){
+          array_push($ccStep, ['name' => "", 'email' => $email, 'step' => $step]);
+        }else{
+          array_push($cc, $email);
+        }
       }
     }
     $invite = new Invite($siteInfo['signow_username'], $to, $cc, $ccStep);

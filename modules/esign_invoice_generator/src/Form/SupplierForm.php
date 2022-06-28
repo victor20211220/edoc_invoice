@@ -70,21 +70,27 @@ class SupplierForm extends FormBase
       if (in_array($key, ["when_cc1", "when_cc2", "when_cc3", "when_cc4"])) {
         $form[$key] = [
           '#type' => 'radios',
-          '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : 0,
+          '#default_value' => ($record[$key] && $_GET['num']) ? $record[$key] : 1,
           '#options' => array(
             0 => t('Immediate'),
             1 => t('After 1 signed'),
             2 => t('After 2 signed'),
           ),
         ];
+        $form[$key]['#suffix'] = '</div>';
       } else {
         $form[$key] = [
-          '#type' => in_array($key, ["email", "email_cc1", "email_cc2", "email_cc3", "email_cc4"]) ?
-            'email' : 'textfield',
-          '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : '',
+          '#type' => in_array($key, ["email", "email_cc1", "email_cc2", "email_cc3", "email_cc4"]) ? 'email' : 'textfield',
+          '#required' => !self::isCcEmailFields($key),
+          '#default_value' => ($record[$key] && $_GET['num']) ? $record[$key] : "",
         ];
       }
-      $form[$key] = array_merge($form[$key], ['#title' => $field, '#required' => true]);
+      $form[$key] = array_merge($form[$key], ['#title' => $field]);
+      if(self::isCcEmailFields($key))
+      {
+        $form[$key]['#prefix'] = '<div class="form-group">';
+      }
+
     }
 
     $form['submit'] = [
@@ -92,6 +98,11 @@ class SupplierForm extends FormBase
       '#value' => 'save',
     ];
     return $form;
+  }
+
+  static function isCcEmailFields($key)
+  {
+    return in_array($key, ["email_cc1", "email_cc2", "email_cc3", "email_cc4"]);
   }
 
   /**
