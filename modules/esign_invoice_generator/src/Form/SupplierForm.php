@@ -82,7 +82,7 @@ class SupplierForm extends FormBase
         $form[$key] = [
           '#type' => in_array($key, ["email", "email_cc1", "email_cc2", "email_cc3", "email_cc4"]) ? 'email' : 'textfield',
           '#required' => !self::isCcEmailFields($key),
-          '#default_value' => ($record[$key] && $_GET['num']) ? $record[$key] : "",
+          '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : "",
         ];
       }
       $form[$key] = array_merge($form[$key], ['#title' => $field]);
