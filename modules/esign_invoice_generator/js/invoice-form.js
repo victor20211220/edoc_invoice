@@ -50,6 +50,7 @@ $('#edit-add').click(function (e) { //when add new detail row
     $(newOneBlockSelector + ' input[type=number]').val(0);
     $(`${newOneBlockSelector} input[name="qty[]"]`).val(1);
   }
+  $(`.one-block:nth-child(${rowLen + 2}) [name="dept[]"]`).focus().select(); //auto focus dept select of new added detail row
   $('#edit-save, #edit-save-send, #edit-save-clone').removeAttr('disabled');
 });
 

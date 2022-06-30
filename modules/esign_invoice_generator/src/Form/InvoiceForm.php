@@ -85,7 +85,7 @@ class InvoiceForm extends FormBase
       'dept' => t('Dept'),
       'type' => t('Type'),
       'qty' => t('Qty'),
-      'description' => t('Description'),
+      'description' => [t('Description'), 25],
       'price_per' => t('Price per'),
       'vat' => t('Vat%'),
       'amount' => t('Amount'),
@@ -95,8 +95,8 @@ class InvoiceForm extends FormBase
   public static function getMainFields()
   {
     return [
-      'uws_ref' => t('Our Ref:'),
-      'uws_sup_ref' => t('Supplier Ref:'),
+      'uws_ref' => [t('Our Ref:'), 40],
+      'uws_sup_ref' => [t('Supplier Ref:'), 40],
       'uws_period_from' => t('Period Range From:'),
       'uws_period_to' => t('To:'),
       'doc_type' => t('Document type:'),
@@ -153,7 +153,7 @@ class InvoiceForm extends FormBase
   public function buildForm(array $form, FormStateInterface $form_state)
   {
     $db = \Drupal::database();
-    if (isset($_GET['document_id'])) {
+    if (isset($_GET['document_id'])) { //cancel invite
       $documentId = $_GET['document_id'];
       $cancelStatus = $this->cancelInvite($documentId);
       if ($cancelStatus == 'success') {
@@ -189,7 +189,7 @@ class InvoiceForm extends FormBase
           ->condition('invoice_id', $invoiceCid)
           ->execute()->fetchAll();
         $newDtRows = [];
-        foreach ($invDtRows as $key => $invDtRow) {
+        foreach ($invDtRows as $invDtRow) {
           $newDtRow = (array)$invDtRow;
           unset($newDtRow['id']);
           foreach (array_keys($newDtRow) as $detailKey) {
@@ -264,7 +264,7 @@ class InvoiceForm extends FormBase
                   global $row;
                   global $detailRows;
                   $row = $query->execute()->fetchAssoc();
-                  $detailRows = $db->select(self::$invoiceDetailsTblName, NULL)
+                  $detailRows = $db->select(self::$invoiceDetailsTblName)
                     ->fields(NULL, array_keys($detailFields))
                     ->condition('invoice_id', $invoiceId)
                     ->execute()->fetchAll();
@@ -280,14 +280,16 @@ class InvoiceForm extends FormBase
                 $isEdit = isset($row);
                 foreach ($uwsFields as $key => $field) {
                   $form[$key] = [
-                    '#title' => $field,
+                    '#title' => is_array($field) ? $field[0] : $field,
                     '#required' => TRUE,
                     '#type' => $this->isUwsPeriodField($key) === FALSE ?
                       ($this->isDocTypeField($key) ? "select" : "textfield") : "date",
                     '#default_value' => $isEdit ? $row[$key] : ($this->isDocTypeField($key) ? "i" : ""),
                   ];
-                  if (in_array($key, ["uws_ref", "uws_sup_ref"])) // max 40 chars in length
-                    $form[$key]['#attributes'] = ['maxlength' => 40];
+                  if (is_array($field)) {
+                    $form[$key]['#attributes']['maxlength'] = $field[1];
+                    $form[$key]['#attributes']['size'] = $field[1];
+                  }
                   if ($this->isDocTypeField($key)) {
                     $form[$key]['#options'] = [
                       'i' => $this->t('Invoice'),
@@ -305,10 +307,14 @@ class InvoiceForm extends FormBase
                     foreach ($detailFields as $key => $label) {
                       $multi_key = $key . '-' . $i . '-[]';
                       $form[$multi_key] = [
-                        '#title' => $i == 0 ? $label : '',
+                        '#title' => $i == 0 ? is_array($label) ? $label[0] : $label : '',
                         '#required' => FALSE,
                         '#value' => $detailRow->{$key},
                       ];
+                      if (is_array($label)) {
+                        $form[$multi_key]['#attributes']['size'] = $label[1];
+                        $form[$multi_key]['#attributes']['maxlength'] = $label[1];
+                      }
                       if ($key == 'amount') {
                         $form[$multi_key]['#default_value'] = 0;
                         $form[$multi_key]['#step'] = 0.01;
@@ -318,6 +324,10 @@ class InvoiceForm extends FormBase
                         $form[$multi_key]['#options'] = $options[$key];
                       } else {
                         $form[$multi_key]['#type'] = $key == 'amount' ? 'number' : 'textfield';
+                      }
+                      if (in_array($key, ['qty', 'price_per'])) {
+                        $form[$multi_key]['#attributes']['min'] = 0;
+                        $form[$multi_key]['#attributes']['max'] = 1000000;
                       }
                     }
                     $form['delete' . $i] = [
@@ -332,10 +342,18 @@ class InvoiceForm extends FormBase
                   foreach ($detailFields as $key => $label) {
                     $multi_key = $key . '[]';
                     $form[$multi_key] = [
-                      '#title' => $label,
+                      '#title' => is_array($label) ? $label[0] : $label,
                       '#required' => FALSE,
                       '#type' => 'select',
                     ];
+                    if (is_array($label)) {
+                      $form[$multi_key]['#attributes']['size'] = $label[1];
+                      $form[$multi_key]['#attributes']['maxlength'] = $label[1];
+                    }
+                    if (in_array($key, ['qty', 'price_per'])) {
+                      $form[$multi_key]['#attributes']['min'] = 0;
+                      $form[$multi_key]['#attributes']['max'] = 1000000;
+                    }
                     switch ($key) //generate different inputs per key
                     {
                       case 'dept':
@@ -353,7 +371,7 @@ class InvoiceForm extends FormBase
                         $form[$multi_key]['#default_value'] = 0;
                         if ($key === "amount") {
                           $form[$multi_key]['#default_value'] = 0.00;
-                          $form[$multi_key]['#attributes'] = ['readonly' => ''];
+                          $form[$multi_key]['#attributes']['readonly'] = "";
                         } else {
                           $form[$multi_key]['#step'] = 0.01;
                         }
@@ -728,12 +746,12 @@ class InvoiceForm extends FormBase
     }
     $ccStep = [];
     $cc = [];
-    foreach([1,2,3,4] as $key){
+    foreach ([1, 2, 3, 4] as $key) {
       $email = $supplierDetails["email_cc{$key}"];
-      if($email){
-        if(($step = $supplierDetails["when_cc{$key}"]) > 0){
+      if ($email) {
+        if (($step = $supplierDetails["when_cc{$key}"]) > 0) {
           array_push($ccStep, ['name' => "", 'email' => $email, 'step' => $step]);
-        }else{
+        } else {
           array_push($cc, $email);
         }
       }
@@ -803,7 +821,7 @@ class InvoiceForm extends FormBase
   public
   function cancelInvite($documentId)
   {
-    if ($_SERVER['HTTP_HOST'] === '127.0.0.7') {
+    if (self::isLocal()) { //disable send pdf document to sign now on local
       return 'success';
     }
     $this->makeToken();
@@ -1009,7 +1027,7 @@ class InvoiceForm extends FormBase
     $siteName = $siteInfo['name'];
     $sender = $siteInfo['gmail'];
     $mail = new PHPMailer();
-    $mail->IsSMTP();
+    //$mail->IsSMTP();
     //    $mail->Mailer = "smtp";
     //    $mail->SMTPDebug = 1;
     //    $mail->SMTPAuth = TRUE;
@@ -1021,7 +1039,7 @@ class InvoiceForm extends FormBase
 
     $query = $db->select('suppliers', 'm')
       ->condition('id', $invoice['supplier_id'])
-      ->fields('m', ['supplier_name', 'email']);
+      ->fields('m', ['supplier_name', 'email', 'email_cc1', 'email_cc2', 'email_cc3', 'email_cc4']);
     $supplier = $query->execute()->fetchAssoc();
     $userId = $invoice['user_id'];
     $userName = self::getUsernameById($userId);
@@ -1030,6 +1048,11 @@ class InvoiceForm extends FormBase
     $mail->IsHTML(TRUE);
     $mail->AddAddress($userEmail, $userName);
     $mail->AddAddress($supplier['email'], $supplier['supplier_name']);
+    foreach ([1, 2, 3, 4] as $key) {
+      $email = $supplier["email_cc{$key}"];
+      if ($email)
+        $mail->addCC($email);
+    }
     $mail->SetFrom($sender, $siteName);
     $mail->AddReplyTo($sender, $siteName);
     $mail->Subject = $siteName . " has sent you a credit note document.";
@@ -1112,6 +1135,6 @@ class InvoiceForm extends FormBase
 
   static function doubleFormat($number = 0)
   {
-    return number_format($number,2,".",".");
+    return number_format($number, 2, ".", ".");
   }
 }

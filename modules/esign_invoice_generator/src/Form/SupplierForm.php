@@ -18,24 +18,24 @@ class SupplierForm extends FormBase
   public function getAllFields()
   {
     return [
-      'sup_ac' => t('Supplier A/C'),
-      'company_name' => t('Company Name'),
-      'address_1' => t('Address 1'),
-      'address_2' => t('Address 2'),
-      'county' => t('County/Town'),
-      'city' => t('City'),
-      'postcode' => t('Postcode'),
-      'supplier_name' => t('Contact Name'),
-      'supplier_number' => t('Contact Number'),
-      'supplier_role' => t('Contact Role'),
-      'email' => t('Contact Email'),
-      'email_cc1' => t('Email CC1'),
+      'sup_ac' => [t('Supplier A/C'), 40],
+      'company_name' => [t('Company Name'), 100],
+      'address_1' => [t('Address 1'), 100],
+      'address_2' => [t('Address 2'), 100],
+      'county' => [t('County/Town'), 40],
+      'city' => [t('City'), 40],
+      'postcode' => [t('Postcode'), 40],
+      'supplier_name' => [t('Contact Name'), 40],
+      'supplier_role' => [t('Contact Role'), 40],
+      'supplier_number' => [t('Contact Number'), 15],
+      'email' => [t('Contact Email'), 60],
+      'email_cc1' => [t('Email CC1'), 60],
       'when_cc1' => t('When CC1'),
-      'email_cc2' => t('Email CC2'),
+      'email_cc2' => [t('Email CC2'), 60],
       'when_cc2' => t('When CC2'),
-      'email_cc3' => t('Email CC3'),
+      'email_cc3' => [t('Email CC3'), 60],
       'when_cc3' => t('When CC3'),
-      'email_cc4' => t('Email CC4'),
+      'email_cc4' => [t('Email CC4'), 60],
       'when_cc4' => t('When CC4'),
     ];
   }
@@ -70,7 +70,7 @@ class SupplierForm extends FormBase
       if (in_array($key, ["when_cc1", "when_cc2", "when_cc3", "when_cc4"])) {
         $form[$key] = [
           '#type' => 'radios',
-          '#default_value' => (isset($record[$key]) && $_GET['num']) ? !is_null($record[$key]) ?   $record[$key]: 1 : 1,
+          '#default_value' => (isset($record[$key]) && $_GET['num']) ? !is_null($record[$key]) ? $record[$key] : 1 : 1,
           '#options' => array(
             0 => t('Immediate'),
             1 => t('After 1 signed'),
@@ -85,9 +85,12 @@ class SupplierForm extends FormBase
           '#default_value' => (isset($record[$key]) && $_GET['num']) ? $record[$key] : "",
         ];
       }
-      $form[$key] = array_merge($form[$key], ['#title' => $field]);
-      if(self::isCcEmailFields($key))
-      {
+      $form[$key] = array_merge($form[$key], ['#title' => is_array($field) ? $field[0] : $field]);
+      if (is_array($field)) {
+        $form[$key]['#attributes']['maxlength'] = $field[1];
+        $form[$key]['#attributes']['size'] = $field[1];
+      }
+      if (self::isCcEmailFields($key)) {
         $form[$key]['#prefix'] = '<div class="form-group">';
       }
 

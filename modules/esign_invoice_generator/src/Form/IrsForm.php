@@ -32,8 +32,8 @@ class IrsForm extends FormBase
   {
     return [
       'supplier_id' => t('Supplier:'),
-      'uws_ref' => t('Our Ref:'),
-      'uws_sup_ref' => t('Supplier Ref:'),
+      'uws_ref' => [t('Our Ref:'), 40],
+      'uws_sup_ref' => [t('Supplier Ref:'), 40],
       'start_date' => t('Start billing from:'),
       'end_date' => t('To:'),
       'recurring_every' => t('Every:'),
@@ -85,17 +85,20 @@ class IrsForm extends FormBase
     //start add header fields
     foreach ($headerFields as $key => $field) {
       $form[$key] = [
-        '#title' => $field,
+        '#title' => is_array($field) ? $field[0] : $field,
         '#required' => TRUE,
         '#type' => $this->getTypeFromFormKey($key),
         '#default_value' => (isset($isClone) || isset($isManage)) ? $row[$key] : ($this->isKeyRp($key) ? "DAY" : ""),
       ];
 
-      if (in_array($key, ["uws_ref", "uws_sup_ref"])) // max 40 chars in length
-        $form[$key]['#attributes'] = ['maxlength' => 40];
+      if (is_array($field)) {
+        $form[$key]['#attributes']['maxlength'] = $field[1];
+        $form[$key]['#attributes']['size'] = $field[1];
+      }
+
       if (isset($isManage)) {
         if (!in_array($key, ['start_date', 'end_date'])) {
-          $form[$key]['#attributes'] = ['disabled' => 'disabled'];
+          $form[$key]['#attributes']['disabled'] = "disabled";
         }
       }
       if (in_array($key, ["supplier_id", "recurring_period"])) {
@@ -122,13 +125,22 @@ class IrsForm extends FormBase
         foreach ($detailFields as $key => $label) {
           $multi_key = $key . '-' . $i . '-[]';
           $form[$multi_key] = [
-            '#title' => $i == 0 ? $label : '',
+            '#title' => $i == 0 ? is_array($label) ? $label[0] : $field : '',
             '#required' => FALSE,
             '#value' => $detailRow->{$key},
             '#type' => 'select',
           ];
+          if (is_array($label)) {
+            $form[$multi_key]['#attributes']['maxlength'] = $label[1];
+            $form[$multi_key]['#attributes']['size'] = $label[1];
+          }
+
+        if (in_array($key, ['qty', 'price_per'])) {
+          $form[$multi_key]['#attributes']['min'] = 0;
+          $form[$multi_key]['#attributes']['max'] = 1000000;
+        }
           if (isset($isManage)) {
-            $form[$multi_key]['#attributes'] = ['disabled' => 'disabled'];
+            $form[$multi_key]['#attributes']['disabled'] = "disabled";
           }
           switch ($key) //generate different inputs per key
           {
@@ -146,7 +158,7 @@ class IrsForm extends FormBase
               $form[$multi_key]['#type'] = 'number';
               $form[$multi_key]['#default_value'] = 0;
               if ($key === "amount") {
-                $form[$multi_key]['#attributes'] = ['readonly' => ''];
+                $form[$multi_key]['#attributes']['readonly'] = "";
               } else {
                 $form[$multi_key]['#step'] = 0.01;
               }
@@ -172,10 +184,19 @@ class IrsForm extends FormBase
       foreach ($detailFields as $key => $label) {
         $multi_key = $key . '[]';
         $form[$multi_key] = [
-          '#title' => $label,
+          '#title' => is_array($label) ? $label[0] : $label,
           '#required' => FALSE,
           '#type' => 'select',
         ];
+        if (is_array($label)) {
+          $form[$multi_key]['#attributes']['maxlength'] = $label[1];
+          $form[$multi_key]['#attributes']['size'] = $label[1];
+        }
+
+        if (in_array($key, ['qty', 'price_per'])) {
+          $form[$multi_key]['#attributes']['min'] = 0;
+          $form[$multi_key]['#attributes']['max'] = 1000000;
+        }
 
         switch ($key) //generate different inputs per key
         {

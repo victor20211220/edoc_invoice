@@ -10,7 +10,7 @@
     margin-top: 16px;
     cursor: pointer;
 }
-.one-block:nth-child(4) .delete-row {
+.one-block:nth-child(2) .delete-row {
     margin-top: 36px;
 }
 
@@ -24,7 +24,10 @@ input:disabled {
 .color-red{
   color: red;
 }
-
+#invoice-form select{
+  margin: 2px;
+  padding: 2px;
+}
 input:read-only{
   background-color:rgba(239, 239, 239, 0.3);
 }
