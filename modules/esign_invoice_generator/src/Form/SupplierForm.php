@@ -19,7 +19,7 @@ class SupplierForm extends FormBase
   {
     return [
       'sup_ac' => [t('Supplier A/C'), 40],
-      'company_name' => [t('Company Name'), 100],
+      'company_name' => [t('Company Name'), 40],
       'address_1' => [t('Address 1'), 100],
       'address_2' => [t('Address 2'), 100],
       'county' => [t('County/Town'), 40],
