@@ -1,0 +1,6 @@
+table.dataTable td:nth-child(-n+6) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}

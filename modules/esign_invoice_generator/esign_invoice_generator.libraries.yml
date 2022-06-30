@@ -19,6 +19,9 @@ datatable:
     - core/jquery
 suppliers:
   version: 1.93
+  css:
+    theme:
+      css/suppliers-table.css: {}
   js:
     js/suppliers.js: {}
   dependencies:
