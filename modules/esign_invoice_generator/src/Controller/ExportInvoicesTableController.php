@@ -161,7 +161,7 @@ class ExportInvoicesTableController extends ControllerBase {
               $headerRow[13] = $this->formatPrice($ZTotal);
               $headerRow[16] = $this->formatPrice($ATotal);
               $headerRow[17] = $this->formatPrice($AVat);
-              $headerRow[18] = $this->formatPrice($CTotal);
+              $headerRow[19] = $this->formatPrice($CTotal);
               $headerRow[20] = $this->formatPrice($CVat);
               foreach ($alphas as $rKey => $alpha) {
                 $a1InvoSheet->setCellValue($alpha . ($rInd), $headerRow[$rKey]);
@@ -246,14 +246,14 @@ class ExportInvoicesTableController extends ControllerBase {
               $invoiceDate,
               "",
               "Z",
-              0,
+              "ZTotal",
               0,
               "A",
-              "aTotal",
-              "aVat",
+              "ATotal",
+              "AVat",
               "C",
-              "cTotal",
-              "cVat",
+              "CTotal",
+              "CVat",
               $username,
               $username,
             ];
@@ -282,16 +282,16 @@ class ExportInvoicesTableController extends ControllerBase {
             $net,
             $invoice->vat,
           ];
-          for ($i = 0; $i < 15; $i++) {
+          for ($i = 0; $i < 16; $i++) {
             array_push($row, "");
           }
           array_push($details, $row);
           if ($key + 1 == $invoiceCnt) {
             $headerRow[5] = $this->formatPrice($ZTotal + $ATotal + $AVat + $CTotal + $CVat);
             $headerRow[13] = $this->formatPrice($ZTotal);
-            $headerRow[15] = $this->formatPrice($ATotal);
+            $headerRow[16] = $this->formatPrice($ATotal);
             $headerRow[17] = $this->formatPrice($AVat);
-            $headerRow[18] = $this->formatPrice($CTotal);
+            $headerRow[19] = $this->formatPrice($CTotal);
             $headerRow[20] = $this->formatPrice($CVat);
             foreach ($alphas as $rKey => $alpha) {
               $a1InvoSheet->setCellValue($alpha . ($rInd), $headerRow[$rKey]);

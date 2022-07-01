@@ -549,7 +549,7 @@ class InvoiceForm extends FormBase
     $details_count = count($invoiceDetails[$detail_keys[0]]);
     $total_vat = 0;
     $total_net = 0;
-    //$testCount = 20;
+    $testCount = 9;
     $vats = self::getVats();
     for ($i = 0; $i < $details_count; $i++) {
       $row = '<tr>';
@@ -570,19 +570,18 @@ class InvoiceForm extends FormBase
           }
         }
         if (in_array($detail_key, ['price_per', 'amount'])) {
-          $val = number_format((float)$val, 2, '.', ' ');
+          $val = number_format((float)$val, 2, '.', '');
         }
         $row .= '<td>' . $val . '</td>';
       }
       $row .= '</tr>';
       $details[] = $row;
-      //for($j =0; $j < $testCount; $j++){
-      //}
+      for ($j = 0; $j < $testCount; $j++) {
+      }
     }
-    //$details_count = $testCount;
-    $total_due = number_format($total_net + $total_vat, 2, '.', ' ');
-    $total_vat = number_format($total_vat, 2, '.', ' ');
-    $total_net = number_format($total_net, 2, '.', ' ');
+    $total_due = number_format($total_net + $total_vat, 2, '.', '');
+    $total_vat = number_format($total_vat, 2, '.', '');
+    $total_net = number_format($total_net, 2, '.', '');
     $sign = $sign_date = "";
     if ($fields['doc_type'] === "c") {
       $sign = "Not Required";
@@ -689,13 +688,15 @@ class InvoiceForm extends FormBase
       return 'success';
     }
     $this->makeToken();
-    $y = 528 + ($lastpageDetailCount - 1) * 22;
+    $y = 522 + ($lastpageDetailCount - 1) * 22;
     if ($docType === "c") {
       $y += 20;
     }
     $h = 20;
     $w = 139;
-    $uwsEmail = "victor20211220@gmail.com";
+    if(self::isLocal()) {
+      $uwsEmail = "victor20211220@gmail.com";
+    }
     $receivers = [
       [$uwsEmail, 'Signer 1', $h, $w, $y, 76.56],
       [$supplierDetails['email'], 'Signer2', $h, $w, $y, 383],
@@ -995,9 +996,9 @@ class InvoiceForm extends FormBase
     $invoiceData = $pdfDetails[0];
 
     //generate invoice html into html for multi pages
-    $invoiceHtml = file_get_contents(__DIR__ . '/../../templates/invoiceHtmlHead.html');
-    $invoiceHtmlHeader = file_get_contents(__DIR__ . '/../../templates/invoiceHtmlHeader.html');
-    $invoiceHtmlFooter = file_get_contents(__DIR__ . '/../../templates/invoiceHtmlFooter.html');
+    $invoiceHtml = file_get_contents(__DIR__ . '/../../templates/InvoiceHtmlHead.html');
+    $invoiceHtmlHeader = file_get_contents(__DIR__ . '/../../templates/InvoiceHtmlHeader.html');
+    $invoiceHtmlFooter = file_get_contents(__DIR__ . '/../../templates/InvoiceHtmlFooter.html');
     foreach ($invoiceData as $key => $value) {
       $invoiceHtmlHeader = str_replace("{{" . $key . "}}", $value, $invoiceHtmlHeader);
       $invoiceHtmlFooter = str_replace("{{" . $key . "}}", $value, $invoiceHtmlFooter);
@@ -1036,8 +1037,7 @@ class InvoiceForm extends FormBase
       }
       $invoiceHtml .= $pageHtml;
     }
-
-    //exit($invoiceHtml);
+    exit($invoiceHtml);
     $lastpageDetailCount = $remainder > 8 ? 0 : $remainder;
 
     $invoice_file = 'invoice-' . $fields['doc_number'] . '.pdf';
@@ -1054,12 +1054,12 @@ class InvoiceForm extends FormBase
     }
     $fullPath = $invoices_dir . '/' . $invoice_file;
     $make_invoice = file_put_contents($fullPath, $output);
-    //exit("<script>window.open(\"http://127.0.0.21/modules/esign_invoice_generator/invoices/$invoice_file\")</script>");
+    //exit("<script>window.open(\"https://dedocs.ecso.ws/modules/esign_invoice_generator/invoices/$invoice_file\")</script>");
     if ($make_invoice !== FALSE) {
       $fields['invoice_file'] = $invoice_file;
       if ($fields['doc_type'] === 'i') {
         //dd(compact(explode(" ", "totalPages lastpageDetailCount")));
-        $apiResult = $this->sendToSignNow($fullPath, $pdfDetails[1], $pdfDetails[3], $fields['doc_type'], $totalPages, $lastpageDetailCount);
+        $apiResult = $this->sendToSignNow($fullPath, $pdfDetails[1], $pdfDetails[3], $fields['doc_type'], $totalPages - 1, $lastpageDetailCount);
         if ($apiResult == 'success') {
           $fields['status'] = 1;
           $fields['document_id'] = $this->documentId;
