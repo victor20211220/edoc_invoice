@@ -1056,7 +1056,7 @@ class InvoiceForm extends FormBase
     }
     $fullPath = $invoices_dir . '/' . $invoice_file;
     $make_invoice = file_put_contents($fullPath, $output);
-    exit("<script>window.open(\"http://127.0.0.21/modules/esign_invoice_generator/invoices/$invoice_file\")</script>");
+    //exit("<script>window.open(\"http://127.0.0.21/modules/esign_invoice_generator/invoices/$invoice_file\")</script>");
     if ($make_invoice !== FALSE) {
       $fields['invoice_file'] = $invoice_file;
       if ($fields['doc_type'] === 'i') {
