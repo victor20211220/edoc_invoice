@@ -1,0 +1,92 @@
+<div class="container">
+  <header>
+    <p class="page-number">Page {{page_num}} of {{total_pages}}</p>
+    <img src="{{site_logo}}">
+    <div class="company-info text-center">
+      <p class="name">{{site_name}}</p>
+      <p>Head Office:<span>{{site_address}}</span>,
+        Tel:<span>{{site_tel}}</span></p>
+      <p>Vat Reg No.<span>{{site_vat_reg}}</span></p>
+    </div>
+  </header>
+  <article>
+    <address class="float-left mr-15">
+      <p class="title">{{doc_type_title}} Details</p>
+      <div class="border-block">
+        <table class="outline-table">
+          <tbody>
+          <tr>
+            <td>Date:</td>
+            <td>{{invoice_date}}</td>
+          </tr>
+          <tr>
+            <td>{{doc_type_title}} Number:</td>
+            <td>{{doc_number}}</td>
+          </tr>
+          <tr>
+            <td>UWS Sup a/c:</td>
+            <td>{{sup_ac}}</td>
+          </tr>
+          <tr>
+            <td>Our Ref:</td>
+            <td>{{uws_ref}}</td>
+          </tr>
+          <tr>
+            <td>Period Range:</td>
+            <td>{{uws_period_from}} - {{uws_period_to}}</td>
+          </tr>
+          <tr>
+            <td>Supplier Ref:</td>
+            <td>{{uws_sup_ref}}</td>
+          </tr>
+          <tr style="display:{{show_doc_link}}">
+            <td>Relates to inv:</td>
+            <td>{{doc_link}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </address>
+    <address class="float-right">
+      <p class="title">To</p>
+      <div class="border-block">
+        <table class="outline-table">
+          <tbody>
+          <tr>
+            <td class="text-bold">{{company_name}}</td>
+          </tr>
+          <tr>
+            <td>{{address_1}}</td>
+          </tr>
+          <tr>
+            <td>{{address_2}}</td>
+          </tr>
+          <tr>
+            <td>{{county}}</td>
+          </tr>
+          <tr>
+            <td>{{city}}</td>
+          </tr>
+          <tr>
+            <td>{{postcode}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </address>
+  </article>
+  <div class="details">
+    <p class="title">Details:</p>
+    <table>
+      <thead class="text-center">
+      <tr>
+        <th width="23%">Dept</th>
+        <th width="17%">Type</th>
+        <th width="10%">Qty</th>
+        <th width="20%">Description</th>
+        <th width="10%">Price Per</th>
+        <th width="10%">Vat %</th>
+        <th width="10%">Amount</th>
+      </tr>
+      </thead>
+      <tbody>

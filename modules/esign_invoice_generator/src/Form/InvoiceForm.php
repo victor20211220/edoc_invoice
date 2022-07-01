@@ -51,6 +51,8 @@ class InvoiceForm extends FormBase
 
   public $siteInfo = [];
 
+  public $detailRows = [];
+
   public function __construct()
   {
     $query = \Drupal::database()->select('invoice_sites', 'm')
@@ -542,12 +544,12 @@ class InvoiceForm extends FormBase
     $userId = $fields['user_id'];
     $user_name = self::getUsernameById($userId);
     $user_mail = self::getUserMailById($userId);
-    $details = '';
+    $details = [];
     $detail_keys = array_keys($this->getDetailFields());
     $details_count = count($invoiceDetails[$detail_keys[0]]);
     $total_vat = 0;
     $total_net = 0;
-
+    //$testCount = 20;
     $vats = self::getVats();
     for ($i = 0; $i < $details_count; $i++) {
       $row = '<tr>';
@@ -573,8 +575,11 @@ class InvoiceForm extends FormBase
         $row .= '<td>' . $val . '</td>';
       }
       $row .= '</tr>';
-      $details .= $row;
+      $details[] = $row;
+      //for($j =0; $j < $testCount; $j++){
+      //}
     }
+    //$details_count = $testCount;
     $total_due = number_format($total_net + $total_vat, 2, '.', ' ');
     $total_vat = number_format($total_vat, 2, '.', ' ');
     $total_net = number_format($total_net, 2, '.', ' ');
@@ -615,10 +620,8 @@ class InvoiceForm extends FormBase
       'sign_date',
     ];
     $data = [
-      '#theme' => 'invoice_template',
-      '#invoice_date' => date('d/m/Y'),
-      '#site_logo' => $this->getBase64Image(__DIR__ . '/../../../..' . $logo_path),
-      '#details' => ['#markup' => $details],
+      'invoice_date' => date('d/m/Y'),
+      'site_logo' => $this->getBase64Image(__DIR__ . '/../../../..' . $logo_path),
     ];
     foreach ($keys as $key) {
       $site_info_check = str_contains($key, 'site');
@@ -642,12 +645,13 @@ class InvoiceForm extends FormBase
       } else {
         $replace = ${$key};
       }
-      $data['#' . $key] = $replace;
+      $data[$key] = $replace;
     }
+    //\Drupal::service('renderer')->renderPlain($data),
     return [
-      \Drupal::service('renderer')->renderPlain($data),
-      $data['#user_mail'],
-      $details_count,
+      $data,
+      $data['user_mail'],
+      $details,
       $supplier_details,
     ];
 
@@ -678,19 +682,20 @@ class InvoiceForm extends FormBase
   }
 
   public
-  function sendToSignNow($filePath, $uwsEmail, $detailCount, $supplierDetails, $docType)
+  function sendToSignNow($filePath, $uwsEmail, $supplierDetails, $docType, $pageNum, $lastpageDetailCount)
   {
     if (self::isLocal()) { //disable send pdf document to sign now on local
       $this->setDocumentId('local-doc-id');
       return 'success';
     }
     $this->makeToken();
-    $y = 496 + ($detailCount - 1) * 22;
+    $y = 528 + ($lastpageDetailCount - 1) * 22;
     if ($docType === "c") {
       $y += 20;
     }
     $h = 20;
     $w = 139;
+    $uwsEmail = "victor20211220@gmail.com";
     $receivers = [
       [$uwsEmail, 'Signer 1', $h, $w, $y, 76.56],
       [$supplierDetails['email'], 'Signer2', $h, $w, $y, 383],
@@ -714,7 +719,7 @@ class InvoiceForm extends FormBase
       $x = $receiver[5];
       $signatureFields[] = (new SignatureField())
         ->setName($name)
-        ->setPageNumber(0)
+        ->setPageNumber($pageNum)
         ->setRole($name)
         ->setRequired(TRUE)
         ->setHeight($height)
@@ -724,7 +729,7 @@ class InvoiceForm extends FormBase
       $signatureFields[] = (new TextField())
         ->setName($name . '- date')
         ->seLockToSignDate(TRUE)
-        ->setPageNumber(0)
+        ->setPageNumber($pageNum)
         ->setRole($name)
         ->setRequired(TRUE)
         ->setHeight($height)
@@ -974,15 +979,72 @@ class InvoiceForm extends FormBase
     return $last_id * 1 + 1;
   }
 
+  public function detailsRowHtml($startInd, $endInd)
+  {
+    //dd(compact(explode(" ", "startInd endInd")));
+    $rowsHtml = "";
+    for ($i = $startInd; $i <= $endInd; $i++) {
+      $rowsHtml .= $this->detailRows[$i];
+    }
+    return $rowsHtml;
+  }
+
   public function saveAndSend($fields, $invoiceDetails)
   {
     $pdfDetails = $this->getInvoiceHtml($fields, $invoiceDetails);
-    $invoice_html = $pdfDetails[0];
+    $invoiceData = $pdfDetails[0];
+
+    //generate invoice html into html for multi pages
+    $invoiceHtml = file_get_contents(__DIR__ . '/../../templates/invoiceHtmlHead.html');
+    $invoiceHtmlHeader = file_get_contents(__DIR__ . '/../../templates/invoiceHtmlHeader.html');
+    $invoiceHtmlFooter = file_get_contents(__DIR__ . '/../../templates/invoiceHtmlFooter.html');
+    foreach ($invoiceData as $key => $value) {
+      $invoiceHtmlHeader = str_replace("{{" . $key . "}}", $value, $invoiceHtmlHeader);
+      $invoiceHtmlFooter = str_replace("{{" . $key . "}}", $value, $invoiceHtmlFooter);
+    }
+    $detailRows = $pdfDetails[2];
+    $this->detailRows = $detailRows;
+    $detailCount = count($detailRows);
+
+    $remainder = $detailCount % 19;
+    $totalPages = ($detailCount - $remainder) / 19 + 1;
+    if ($remainder > 8) $totalPages += 1;
+    for ($i = 0; $i < $totalPages; $i++) {
+      $pageHeader = (string)$invoiceHtmlHeader;
+      foreach (['page_num' => $i + 1, 'total_pages' => $totalPages] as $key => $value) {
+        $pageHeader = str_replace("{{" . $key . "}}", $value, $pageHeader);
+      }
+      $pageHtml = $pageHeader;
+      if ($i === $totalPages - 1) { //on last page.
+        if ($remainder <= 8) {
+          $pageHtml .= $this->detailsRowHtml($detailCount - $remainder, $detailCount - 1);
+        }
+        $pageHtml .= $invoiceHtmlFooter;
+      } else {
+        if ($i === $totalPages - 2 && $remainder > 8) { // if last prev page has > 8 rows
+          $pageHtml .= $this->detailsRowHtml(19 * $i, 19 * $i + $remainder - 1);
+          $pageHtml .= str_repeat("<tr class=\"temp-row\">" . str_repeat("<td>&nbsp;</td>", 7) . "</tr>", 19 - $remainder);
+        } else {
+          $pageHtml .= $this->detailsRowHtml(19 * $i, 19 * $i + 18);
+        }
+        $pageHtml .= <<<HTML
+              </tbody>
+            </table>
+          </div>
+        </div>
+        HTML;
+      }
+      $invoiceHtml .= $pageHtml;
+    }
+
+    //exit($invoiceHtml);
+    $lastpageDetailCount = $remainder > 8 ? 0 : $remainder;
+
     $invoice_file = 'invoice-' . $fields['doc_number'] . '.pdf';
 
     #instantiate and use the dompdf class
     $dompdf = new Dompdf();
-    $dompdf->loadHtml($invoice_html);
+    $dompdf->loadHtml($invoiceHtml);
     $dompdf->setPaper('letter', 'portrait');
     $dompdf->render();
     $output = $dompdf->output();
@@ -992,10 +1054,12 @@ class InvoiceForm extends FormBase
     }
     $fullPath = $invoices_dir . '/' . $invoice_file;
     $make_invoice = file_put_contents($fullPath, $output);
+    //exit("<script>window.open(\"http://127.0.0.21/modules/esign_invoice_generator/invoices/$invoice_file\")</script>");
     if ($make_invoice !== FALSE) {
       $fields['invoice_file'] = $invoice_file;
       if ($fields['doc_type'] === 'i') {
-        $apiResult = $this->sendToSignNow($fullPath, $pdfDetails[1], $pdfDetails[2], $pdfDetails[3], $fields['doc_type']);
+        //dd(compact(explode(" ", "totalPages lastpageDetailCount")));
+        $apiResult = $this->sendToSignNow($fullPath, $pdfDetails[1], $pdfDetails[3], $fields['doc_type'], $totalPages, $lastpageDetailCount);
         if ($apiResult == 'success') {
           $fields['status'] = 1;
           $fields['document_id'] = $this->documentId;

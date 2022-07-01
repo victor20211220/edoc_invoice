@@ -1,0 +1,309 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Invoice</title>
+  <style>
+    /* reset */
+
+    * {
+      border: 0;
+      box-sizing: content-box;
+      color: black;
+      font-family: inherit;
+      font-size: inherit;
+      font-style: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      text-decoration: none;
+      vertical-align: top;
+    }
+
+    /* heading */
+
+    h1 {
+      font: bold 100% sans-serif;
+      text-align: center;
+      color: red;
+      text-transform: uppercase;
+    }
+
+    /* table */
+
+    table {
+      font-size: 75%;
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 2px;
+    }
+
+    th,
+    td {
+      border-width: 1px;
+      padding: 0.5em;
+      position: relative;
+      text-align: left;
+    }
+
+    th,
+    td {
+      border-radius: 0.25em;
+      border-style: solid;
+    }
+
+    th {
+      background: #EEE;
+      border-color: #BBB;
+    }
+
+    td {
+      border-color: #DDD;
+    }
+
+    .outline-table {
+      border: solid 2px black;
+    }
+    .outline-table tr, .outline-table td {
+      border: none;
+    }
+
+    .outline-table td:last-child {
+      text-align: right;
+    }
+
+    .bottom-table td:first-child {
+      width: 20%;
+      text-align: left;
+    }
+    .bottom-table td:last-child {
+      border-bottom: solid 1px black;
+      text-align: left;
+    }
+    .bottom-table tr:first-child td {
+      border: none;
+    }
+    .text-bold {
+      font-weight: bold;
+    }
+
+    /* page */
+    html {
+      font: 16px/1 'Open Sans', sans-serif;
+      overflow: auto;
+    }
+
+    body {
+      box-sizing: border-box;
+      height: 11in;
+      overflow: hidden;
+      width: 8.5in;
+    }
+
+    body > div {
+      padding: 20px;
+    }
+
+    /* header */
+
+    header {
+      margin: 0 0 2em;
+    }
+
+    header:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
+
+    header h1 {
+      background: #000;
+      border-radius: 0.25em;
+      color: #FFF;
+      margin: 0 0 1em;
+      padding: 0.5em 0;
+    }
+
+    header .company-info {
+      text-align: center;
+      font-size: 75%;
+      font-style: normal;
+      line-height: 1.25;
+      margin: 0 1em 1em 0;
+    }
+
+    header .company-info p {
+      margin: 0 0 0.25em;
+    }
+
+    header img {
+      display: block;
+      float: right;
+    }
+
+    header span {
+      margin: 0 0 1em 1em;
+      max-height: 25%;
+      max-width: 60%;
+      position: relative;
+    }
+
+    header img {
+      max-height: 100%;
+      max-width: 100%;
+    }
+
+    header input {
+      cursor: pointer;
+      height: 100%;
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    /* article */
+
+    article,
+    article address{
+      margin-bottom: 1em;
+    }
+
+    article:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
+
+    article h1 {
+      clip: rect(0 0 0 0);
+      position: absolute;
+    }
+
+    .float-left {
+      float: left;
+    }
+
+    .float-right {
+      /* float: right; */
+    }
+
+    address .title {
+      font-size: 125%;
+      font-weight: bold;
+      margin-bottom: 1em;
+    }
+
+    .border-block {
+      display: inline-block;
+      width: 3.93in;
+    }
+
+    .border-block p {
+      display: block;
+    }
+
+    span.text-left {
+      float: left;
+      width: 50%;
+    }
+
+    .mr-15 {
+      margin-right: 20px;
+    }
+
+    span.text-right {
+      float: right;
+      width: 50%;
+      text-align: right;
+    }
+
+    .details {
+      margin-bottom: 1em;
+    }
+
+
+    table {
+      border-top: solid 2px black;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table {
+      border-bottom: 0px;
+    }
+
+    tbody tr td:nth-child(6) {
+      text-align: center;
+    }
+
+
+
+    .result-tr td {
+      border: none;
+    }
+
+    tbody tr td:nth-child(3),
+    tbody tr td:nth-child(5),
+    tbody tr td:nth-child(7),
+    .result-tr td:nth-child(3),
+    .result-tr td:nth-child(5){
+      text-align: right;
+      border-width: 1px 2px;
+      border-style: solid;
+      border-color: black;
+    }
+
+    th,
+    td,
+    .result-tr td:nth-child(3) {
+      border-width: 1px 2px;
+      border-style: solid;
+      border-color: black;
+    }
+
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact;
+      }
+
+      html {
+        background: none;
+        padding: 0;
+      }
+
+      body {
+        box-shadow: none;
+        margin: 0;
+      }
+
+      span:empty {
+        display: none;
+      }
+    }
+
+    @page {
+      margin: 0;
+    }
+    .page-number {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 75%;
+      font-style: italic;
+
+    }
+    .temp-row td{
+      border-color: white !important;
+    }
+  </style>
+  <style></style>
+</head>
+
+<body>
