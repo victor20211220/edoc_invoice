@@ -549,12 +549,13 @@ class InvoiceForm extends FormBase
     $details_count = count($invoiceDetails[$detail_keys[0]]);
     $total_vat = 0;
     $total_net = 0;
-    $testCount = 9;
+    $testCount = 19;
     $vats = self::getVats();
     for ($i = 0; $i < $details_count; $i++) {
       $row = '<tr>';
       foreach ($detail_keys as $detail_key) {
         $val = $invoiceDetails[$detail_key][$i];
+        if($detail_key === "type") continue;
         if (!in_array($detail_key, ["qty", "description", "price_per", "amount"])) {
           if ($detail_key == 'vat') {
             $vatVal = $vats[$val];
@@ -565,7 +566,7 @@ class InvoiceForm extends FormBase
           } else {
             $val = $options[$detail_key][$val];
             if ($detail_key == "dept") {
-              $val = explode(" - ", $val)[1];
+              $val = explode(" - ", $val)[1] ."<br/><span>".$options['type'][$invoiceDetails['type'][$i]]."</span>";
             }
           }
         }
@@ -576,8 +577,11 @@ class InvoiceForm extends FormBase
       }
       $row .= '</tr>';
       $details[] = $row;
+      /*
       for ($j = 0; $j < $testCount; $j++) {
+        $details[] = $row;
       }
+      */
     }
     $total_due = number_format($total_net + $total_vat, 2, '.', '');
     $total_vat = number_format($total_vat, 2, '.', '');
@@ -688,15 +692,13 @@ class InvoiceForm extends FormBase
       return 'success';
     }
     $this->makeToken();
-    $y = 522 + ($lastpageDetailCount - 1) * 22;
+    $y = 522 + ($lastpageDetailCount - 1) * 13.75;
     if ($docType === "c") {
       $y += 20;
     }
     $h = 20;
     $w = 139;
-    if(self::isLocal()) {
-      $uwsEmail = "victor20211220@gmail.com";
-    }
+    $uwsEmail = "victor20211220@gmail.com";
     $receivers = [
       [$uwsEmail, 'Signer 1', $h, $w, $y, 76.56],
       [$supplierDetails['email'], 'Signer2', $h, $w, $y, 383],
@@ -1007,9 +1009,9 @@ class InvoiceForm extends FormBase
     $this->detailRows = $detailRows;
     $detailCount = count($detailRows);
 
-    $remainder = $detailCount % 19;
-    $totalPages = ($detailCount - $remainder) / 19 + 1;
-    if ($remainder > 8) $totalPages += 1;
+    $remainder = $detailCount % 12;
+    $totalPages = ($detailCount - $remainder) / 12 + 1;
+    if ($remainder > 5) $totalPages += 1;
     for ($i = 0; $i < $totalPages; $i++) {
       $pageHeader = (string)$invoiceHtmlHeader;
       foreach (['page_num' => $i + 1, 'total_pages' => $totalPages] as $key => $value) {
@@ -1017,16 +1019,16 @@ class InvoiceForm extends FormBase
       }
       $pageHtml = $pageHeader;
       if ($i === $totalPages - 1) { //on last page.
-        if ($remainder <= 8) {
+        if ($remainder <= 5) {
           $pageHtml .= $this->detailsRowHtml($detailCount - $remainder, $detailCount - 1);
         }
         $pageHtml .= $invoiceHtmlFooter;
       } else {
-        if ($i === $totalPages - 2 && $remainder > 8) { // if last prev page has > 8 rows
-          $pageHtml .= $this->detailsRowHtml(19 * $i, 19 * $i + $remainder - 1);
-          $pageHtml .= str_repeat("<tr class=\"temp-row\">" . str_repeat("<td>&nbsp;</td>", 7) . "</tr>", 19 - $remainder);
+        if ($i === $totalPages - 2 && $remainder > 5) { // if last prev page has > 8 rows
+          $pageHtml .= $this->detailsRowHtml(12 * $i, 12 * $i + $remainder - 1);
+          $pageHtml .= str_repeat("<tr class=\"temp-row\">" . str_repeat("<td>&nbsp;</td>", 6) . "</tr>", 12 - $remainder);
         } else {
-          $pageHtml .= $this->detailsRowHtml(19 * $i, 19 * $i + 18);
+          $pageHtml .= $this->detailsRowHtml(12 * $i, 12 * $i + 11);
         }
         $pageHtml .= <<<HTML
               </tbody>
@@ -1037,8 +1039,8 @@ class InvoiceForm extends FormBase
       }
       $invoiceHtml .= $pageHtml;
     }
-    exit($invoiceHtml);
-    $lastpageDetailCount = $remainder > 8 ? 0 : $remainder;
+    //exit($invoiceHtml);
+    $lastpageDetailCount = $remainder > 5 ? 0 : $remainder;
 
     $invoice_file = 'invoice-' . $fields['doc_number'] . '.pdf';
 
@@ -1054,7 +1056,7 @@ class InvoiceForm extends FormBase
     }
     $fullPath = $invoices_dir . '/' . $invoice_file;
     $make_invoice = file_put_contents($fullPath, $output);
-    //exit("<script>window.open(\"https://dedocs.ecso.ws/modules/esign_invoice_generator/invoices/$invoice_file\")</script>");
+    exit("<script>window.open(\"http://127.0.0.21/modules/esign_invoice_generator/invoices/$invoice_file\")</script>");
     if ($make_invoice !== FALSE) {
       $fields['invoice_file'] = $invoice_file;
       if ($fields['doc_type'] === 'i') {

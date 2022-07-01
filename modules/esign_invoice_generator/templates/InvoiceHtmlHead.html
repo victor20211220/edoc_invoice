@@ -240,7 +240,7 @@
       border-bottom: 0px;
     }
 
-    tbody tr td:nth-child(6) {
+    tbody tr td:nth-child(5) {
       text-align: center;
     }
 
@@ -250,9 +250,9 @@
       border: none;
     }
 
-    tbody tr td:nth-child(3),
-    tbody tr td:nth-child(5),
-    tbody tr td:nth-child(7),
+    .details tbody tr:not(.result-tr) td:nth-child(2),
+    tbody tr td:nth-child(4),
+    tbody tr td:nth-child(6),
     .result-tr td:nth-child(3),
     .result-tr td:nth-child(5){
       text-align: right;
@@ -299,8 +299,12 @@
       font-style: italic;
 
     }
+    .details td span{
+      margin-top: 3px;
+    }
     .temp-row td{
       border-color: white !important;
+      line-height: 27px;
     }
   </style>
   <style></style>
