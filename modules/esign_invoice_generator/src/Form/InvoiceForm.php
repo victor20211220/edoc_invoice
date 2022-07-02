@@ -87,7 +87,7 @@ class InvoiceForm extends FormBase
       'dept' => t('Dept'),
       'type' => t('Type'),
       'qty' => t('Qty'),
-      'description' => [t('Description'), 25],
+      'description' => [t('Description'), 50],
       'price_per' => t('Price per'),
       'vat' => t('Vat%'),
       'amount' => t('Amount'),
@@ -549,13 +549,13 @@ class InvoiceForm extends FormBase
     $details_count = count($invoiceDetails[$detail_keys[0]]);
     $total_vat = 0;
     $total_net = 0;
-    $testCount = 19;
+    $testCount = 1;
     $vats = self::getVats();
     for ($i = 0; $i < $details_count; $i++) {
       $row = '<tr>';
       foreach ($detail_keys as $detail_key) {
         $val = $invoiceDetails[$detail_key][$i];
-        if($detail_key === "type") continue;
+        if ($detail_key === "type") continue;
         if (!in_array($detail_key, ["qty", "description", "price_per", "amount"])) {
           if ($detail_key == 'vat') {
             $vatVal = $vats[$val];
@@ -566,9 +566,12 @@ class InvoiceForm extends FormBase
           } else {
             $val = $options[$detail_key][$val];
             if ($detail_key == "dept") {
-              $val = explode(" - ", $val)[1] ."<br/><span>".$options['type'][$invoiceDetails['type'][$i]]."</span>";
+              $val = explode(" - ", $val)[1] . "<br/><span>" . $options['type'][$invoiceDetails['type'][$i]] . "</span>";
             }
           }
+        }
+        if ($detail_key === "description") {
+          $val = "<div style=\"width: inherit\">" . $val . "</div>";
         }
         if (in_array($detail_key, ['price_per', 'amount'])) {
           $val = number_format((float)$val, 2, '.', '');
@@ -692,13 +695,13 @@ class InvoiceForm extends FormBase
       return 'success';
     }
     $this->makeToken();
-    $y = 522 + ($lastpageDetailCount - 1) * 13.75;
+    $y = 501 + $lastpageDetailCount * 36.36;
     if ($docType === "c") {
       $y += 20;
     }
     $h = 20;
     $w = 139;
-    $uwsEmail = "victor20211220@gmail.com";
+    //$uwsEmail = "markmarkkutsenko@gmail.com";
     $receivers = [
       [$uwsEmail, 'Signer 1', $h, $w, $y, 76.56],
       [$supplierDetails['email'], 'Signer2', $h, $w, $y, 383],
@@ -1009,8 +1012,8 @@ class InvoiceForm extends FormBase
     $this->detailRows = $detailRows;
     $detailCount = count($detailRows);
 
-    $remainder = $detailCount % 12;
-    $totalPages = ($detailCount - $remainder) / 12 + 1;
+    $remainder = $detailCount % 11;
+    $totalPages = ($detailCount - $remainder) / 11 + 1;
     if ($remainder > 5) $totalPages += 1;
     for ($i = 0; $i < $totalPages; $i++) {
       $pageHeader = (string)$invoiceHtmlHeader;
@@ -1025,10 +1028,10 @@ class InvoiceForm extends FormBase
         $pageHtml .= $invoiceHtmlFooter;
       } else {
         if ($i === $totalPages - 2 && $remainder > 5) { // if last prev page has > 8 rows
-          $pageHtml .= $this->detailsRowHtml(12 * $i, 12 * $i + $remainder - 1);
-          $pageHtml .= str_repeat("<tr class=\"temp-row\">" . str_repeat("<td>&nbsp;</td>", 6) . "</tr>", 12 - $remainder);
+          $pageHtml .= $this->detailsRowHtml(11 * $i, 11 * $i + $remainder - 1);
+          $pageHtml .= str_repeat("<tr class=\"temp-row\">" . str_repeat("<td>&nbsp;</td>", 6) . "</tr>", 11 - $remainder);
         } else {
-          $pageHtml .= $this->detailsRowHtml(12 * $i, 12 * $i + 11);
+          $pageHtml .= $this->detailsRowHtml(11 * $i, 11 * $i + 10);
         }
         $pageHtml .= <<<HTML
               </tbody>
