@@ -2,6 +2,7 @@ invoice_form:
   version: 1.93
   css:
     theme:
+      css/module.css: {}
       css/invoice-form.css: {}
   js:
     js/invoice-form.js: {}
@@ -13,6 +14,7 @@ datatable:
     theme:
       css/datatable/jquery.dataTables.min.css: { minified: true }
       css/table-filters.css: {}
+      css/module.css: {}
   js:
     js/datatable/jquery.dataTables.min.js: {minified: true }
   dependencies:

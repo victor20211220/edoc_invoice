@@ -40,7 +40,7 @@ class SuppliersTableController extends ControllerBase {
       'opte' => t('Edit'),
       'optg' => t('Generate e-Invoice'),
     ];
-    if ($is_admin)  $operCols['opt'] = t('Delete');
+    //if ($is_admin)  $operCols['opt'] = t('Delete');
     $thead = array_merge($thead, $operCols);
     $fields = array_keys($this->getFields());
     array_push($fields, 'id');
@@ -64,7 +64,7 @@ class SuppliersTableController extends ControllerBase {
       array_push($row, \Drupal\Core\Link::fromTextAndUrl('Edit', $edit));
       array_push($row, \Drupal\Core\Link::fromTextAndUrl('Generate e-Invoice', $generate));
       if ($is_admin) {
-        array_push($row, \Drupal\Core\Link::fromTextAndUrl('Delete', $delete));
+        //array_push($row, \Drupal\Core\Link::fromTextAndUrl('Delete', $delete));
       }
       array_push($rows, $row);
     }

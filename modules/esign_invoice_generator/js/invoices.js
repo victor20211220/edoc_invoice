@@ -17,6 +17,7 @@ $(function () {
     let inputReason = prompt("What's the reason?");
     if(inputReason !== null){
       if (inputReason !== "") {
+        $(this).addClass('disabled');
         location.href = link + "&reason=" + inputReason;
       }
     }

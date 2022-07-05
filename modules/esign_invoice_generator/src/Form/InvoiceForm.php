@@ -87,7 +87,7 @@ class InvoiceForm extends FormBase
       'dept' => t('Dept'),
       'type' => t('Type'),
       'qty' => t('Qty'),
-      'description' => [t('Description'), 50],
+      'description' => [t('Description'), 60],
       'price_per' => t('Price per'),
       'vat' => t('Vat%'),
       'amount' => t('Amount'),
@@ -695,7 +695,7 @@ class InvoiceForm extends FormBase
       return 'success';
     }
     $this->makeToken();
-    $y = 501 + $lastpageDetailCount * 36.36;
+    $y = 486 + (($lastpageDetailCount - 1) * 30.00); // 501 + 36.36
     if ($docType === "c") {
       $y += 20;
     }
@@ -1044,7 +1044,6 @@ class InvoiceForm extends FormBase
     }
     //exit($invoiceHtml);
     $lastpageDetailCount = $remainder > 5 ? 0 : $remainder;
-
     $invoice_file = 'invoice-' . $fields['doc_number'] . '.pdf';
 
     #instantiate and use the dompdf class
@@ -1061,17 +1060,12 @@ class InvoiceForm extends FormBase
     $make_invoice = file_put_contents($fullPath, $output);
     //exit("<script>window.open(\"http://127.0.0.21/modules/esign_invoice_generator/invoices/$invoice_file\")</script>");
     if ($make_invoice !== FALSE) {
-      $fields['invoice_file'] = $invoice_file;
       if ($fields['doc_type'] === 'i') {
         //dd(compact(explode(" ", "totalPages lastpageDetailCount")));
         $apiResult = $this->sendToSignNow($fullPath, $pdfDetails[1], $pdfDetails[3], $fields['doc_type'], $totalPages - 1, $lastpageDetailCount);
         if ($apiResult == 'success') {
           $fields['status'] = 1;
           $fields['document_id'] = $this->documentId;
-          $invoice_file = $this->random_str(26) . '.pdf';
-          $fullPath1 = $invoices_dir . '/' . $invoice_file;
-          rename($fullPath, $fullPath1);
-          $fields['invoice_file'] = $invoice_file;
           \Drupal::messenger()->addMessage("eSign invite Sent");
         } else {
           $fields['status'] = 2;
@@ -1081,6 +1075,10 @@ class InvoiceForm extends FormBase
     } else {
       \Drupal::messenger()->addMessage("Invoice generate failed");
     }
+    $invoice_file = $this->random_str(26) . '.pdf';
+    $fullPath1 = $invoices_dir . '/' . $invoice_file;
+    rename($fullPath, $fullPath1);
+    $fields['invoice_file'] = $invoice_file;
     return $fields;
   }
 

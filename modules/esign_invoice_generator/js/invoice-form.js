@@ -161,3 +161,8 @@ $(document).on('change', `input[name="qty[]"], input[name="price_per[]"]`, funct
   if(qty && pricePer)
     $parentBlock.find(`input[name="amount[]"]`).val((Math.round(qty * pricePer * 100) / 100).toFixed(2));
 })
+
+$('#invoice-form').submit(function(){
+  $('#edit-save-send').addClass('disabled');
+})
+
